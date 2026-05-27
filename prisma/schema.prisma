@@ -8,9 +8,141 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String?  @unique
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  passwordHash String
+  name      String
+  role      String   @default("USER")
+  disabled  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  highlights      ArticleHighlight[]
+  progressRecords UserQuestionProgress[]
+  questionNotes   QuestionNote[]
+  bookmarks       Bookmark[]
+  dailyRecords    DailyRecord[]
+}
+
+model ArticleCategory {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  articles Article[]
+}
+
+model Article {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  summary    String?
+  categoryId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category   ArticleCategory    @relation(fields: [categoryId], references: [id])
+  highlights ArticleHighlight[]
+}
+
+model ArticleHighlight {
+  id        Int      @id @default(autoincrement())
+  startOffset Int
+  endOffset   Int
+  text      String
+  note      String?
+  userId    Int
+  articleId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  article Article @relation(fields: [articleId], references: [id])
+}
+
+model QuestionCategory {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questions Question[]
+}
+
+model Question {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  answer     String
+  categoryId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category        QuestionCategory      @relation(fields: [categoryId], references: [id])
+  progressRecords UserQuestionProgress[]
+  bookmarks       Bookmark[]
+  notes           QuestionNote[]
+}
+
+model UserQuestionProgress {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  questionId    Int
+  ease          Float    @default(2.5)
+  interval      Int      @default(0)
+  repetitions   Int      @default(0)
+  nextReviewDate DateTime
+  lastScore     Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@unique([userId, questionId])
+}
+
+model QuestionNote {
+  id         Int      @id @default(autoincrement())
+  content    String
+  userId     Int
+  questionId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+}
+
+model Bookmark {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  questionId Int
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@unique([userId, questionId])
+}
+
+model DailyRecord {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  date              DateTime
+  questionsLearned  Int      @default(0)
+  questionsReviewed Int      @default(0)
+  correctCount      Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
 }

@@ -51,7 +51,16 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  User: 'User',
+  ArticleCategory: 'ArticleCategory',
+  Article: 'Article',
+  ArticleHighlight: 'ArticleHighlight',
+  QuestionCategory: 'QuestionCategory',
+  Question: 'Question',
+  UserQuestionProgress: 'UserQuestionProgress',
+  QuestionNote: 'QuestionNote',
+  Bookmark: 'Bookmark',
+  DailyRecord: 'DailyRecord'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -69,13 +78,134 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  name: 'name',
   email: 'email',
+  passwordHash: 'passwordHash',
+  name: 'name',
+  role: 'role',
+  disabled: 'disabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const ArticleCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArticleCategoryScalarFieldEnum = (typeof ArticleCategoryScalarFieldEnum)[keyof typeof ArticleCategoryScalarFieldEnum]
+
+
+export const ArticleScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  content: 'content',
+  summary: 'summary',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
+
+
+export const ArticleHighlightScalarFieldEnum = {
+  id: 'id',
+  startOffset: 'startOffset',
+  endOffset: 'endOffset',
+  text: 'text',
+  note: 'note',
+  userId: 'userId',
+  articleId: 'articleId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArticleHighlightScalarFieldEnum = (typeof ArticleHighlightScalarFieldEnum)[keyof typeof ArticleHighlightScalarFieldEnum]
+
+
+export const QuestionCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QuestionCategoryScalarFieldEnum = (typeof QuestionCategoryScalarFieldEnum)[keyof typeof QuestionCategoryScalarFieldEnum]
+
+
+export const QuestionScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  content: 'content',
+  answer: 'answer',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QuestionScalarFieldEnum = (typeof QuestionScalarFieldEnum)[keyof typeof QuestionScalarFieldEnum]
+
+
+export const UserQuestionProgressScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  questionId: 'questionId',
+  ease: 'ease',
+  interval: 'interval',
+  repetitions: 'repetitions',
+  nextReviewDate: 'nextReviewDate',
+  lastScore: 'lastScore',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserQuestionProgressScalarFieldEnum = (typeof UserQuestionProgressScalarFieldEnum)[keyof typeof UserQuestionProgressScalarFieldEnum]
+
+
+export const QuestionNoteScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  userId: 'userId',
+  questionId: 'questionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QuestionNoteScalarFieldEnum = (typeof QuestionNoteScalarFieldEnum)[keyof typeof QuestionNoteScalarFieldEnum]
+
+
+export const BookmarkScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  questionId: 'questionId',
+  createdAt: 'createdAt'
+} as const
+
+export type BookmarkScalarFieldEnum = (typeof BookmarkScalarFieldEnum)[keyof typeof BookmarkScalarFieldEnum]
+
+
+export const DailyRecordScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  date: 'date',
+  questionsLearned: 'questionsLearned',
+  questionsReviewed: 'questionsReviewed',
+  correctCount: 'correctCount',
+  createdAt: 'createdAt'
+} as const
+
+export type DailyRecordScalarFieldEnum = (typeof DailyRecordScalarFieldEnum)[keyof typeof DailyRecordScalarFieldEnum]
 
 
 export const SortOrder = {

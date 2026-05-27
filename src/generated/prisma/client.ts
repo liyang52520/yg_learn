@@ -46,3 +46,48 @@ export { Prisma }
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model ArticleCategory
+ * 
+ */
+export type ArticleCategory = Prisma.ArticleCategoryModel
+/**
+ * Model Article
+ * 
+ */
+export type Article = Prisma.ArticleModel
+/**
+ * Model ArticleHighlight
+ * 
+ */
+export type ArticleHighlight = Prisma.ArticleHighlightModel
+/**
+ * Model QuestionCategory
+ * 
+ */
+export type QuestionCategory = Prisma.QuestionCategoryModel
+/**
+ * Model Question
+ * 
+ */
+export type Question = Prisma.QuestionModel
+/**
+ * Model UserQuestionProgress
+ * 
+ */
+export type UserQuestionProgress = Prisma.UserQuestionProgressModel
+/**
+ * Model QuestionNote
+ * 
+ */
+export type QuestionNote = Prisma.QuestionNoteModel
+/**
+ * Model Bookmark
+ * 
+ */
+export type Bookmark = Prisma.BookmarkModel
+/**
+ * Model DailyRecord
+ * 
+ */
+export type DailyRecord = Prisma.DailyRecordModel
