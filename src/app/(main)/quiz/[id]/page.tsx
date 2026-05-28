@@ -8,15 +8,15 @@ export default async function QuizQuestionPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ ids?: string; mode?: string }>;
+  searchParams: Promise<{ ids?: string }>;
 }) {
   const { id } = await params;
-  const { ids, mode } = await searchParams;
+  const { ids } = await searchParams;
   const session = await auth();
   const userId = Number(session?.user?.id);
 
-  const question = await prisma.question.findUnique({
-    where: { id: Number(id) },
+  const question = await prisma.question.findFirst({
+    where: { id: Number(id), status: "published" },
     include: { category: true },
   });
   if (!question) notFound();
@@ -25,7 +25,7 @@ export default async function QuizQuestionPage({
   const questionIds = idsFromParams?.length
     ? idsFromParams
     : await prisma.question.findMany({
-        where: {},
+        where: { status: "published" },
         select: { id: true },
         orderBy: { createdAt: "desc" },
       }).then((qs) => qs.map((q) => q.id));
@@ -51,7 +51,6 @@ export default async function QuizQuestionPage({
       isBookmarked={!!isBookmarked}
       notes={notes}
       userId={userId}
-      mode={mode as "learn" | "review" | undefined}
       prevId={prevId}
       nextId={nextId}
       questionIds={questionIds}

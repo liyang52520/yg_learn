@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
 
 type Highlight = { id: number; startOffset: number; endOffset: number; text: string; note: string | null };
 
@@ -226,12 +228,18 @@ export function ArticleReader({
     contentRef.current.querySelectorAll("pre").forEach((pre) => {
       if (pre.querySelector(".copy-btn")) return;
       pre.className = (pre.className || "") + " relative rounded-lg text-sm";
+
+      const code = pre.querySelector("code");
+      if (code && !code.dataset.highlighted) {
+        hljs.highlightElement(code);
+        code.dataset.highlighted = "true";
+      }
+
       const btn = document.createElement("button");
       btn.className =
         "copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs px-2 py-1 rounded bg-white/10 text-white hover:bg-white/20";
       btn.textContent = "复制";
       btn.onclick = async () => {
-        const code = pre.querySelector("code");
         await navigator.clipboard.writeText(code?.textContent || pre.textContent || "");
         btn.textContent = "已复制!";
         setTimeout(() => { btn.textContent = "复制"; }, 2000);
@@ -254,26 +262,38 @@ export function ArticleReader({
     });
   }, [highlights, showHighlights]);
 
-  // Mark click -> note popup (delegated from content div)
+  const handleMarkClick = useCallback((e: React.MouseEvent) => {
+    const mark = (e.target as HTMLElement).closest("mark");
+    if (!mark || !mark.dataset.notes) return;
+    const rect = mark.getBoundingClientRect();
+    setNotePopup({
+      x: rect.left,
+      y: rect.bottom + window.scrollY + 4,
+      text: mark.textContent || "",
+      notes: JSON.parse(mark.dataset.notes),
+    });
+    setEditingNoteInPopup(null);
+    setEditNoteText("");
+  }, []);
+
+  // Click/scroll outside popup -> close
   useEffect(() => {
-    const el = contentRef.current;
-    if (!el) return;
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName !== "MARK" || !target.dataset.notes) return;
-      const rect = target.getBoundingClientRect();
-      setNotePopup({
-        x: rect.left,
-        y: rect.bottom + window.scrollY + 4,
-        text: target.textContent || "",
-        notes: JSON.parse(target.dataset.notes),
-      });
-      setEditingNoteInPopup(null);
-      setEditNoteText("");
+    if (!notePopup) return;
+    const handleInteraction = (e: MouseEvent | WheelEvent) => {
+      if ((e.target as HTMLElement).closest(".note-popup-panel")) return;
+      setNotePopup(null);
     };
-    el.addEventListener("click", handleClick);
-    return () => el.removeEventListener("click", handleClick);
-  }, [highlights, showHighlights]);
+    // Delay to avoid the same click that just opened it
+    const timer = setTimeout(() => {
+      document.addEventListener("click", handleInteraction);
+      document.addEventListener("wheel", handleInteraction, { passive: true });
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("wheel", handleInteraction);
+    };
+  }, [notePopup]);
 
   const formattedDate = article.createdAt
     ? new Date(article.createdAt).toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })
@@ -333,6 +353,7 @@ export function ArticleReader({
               ref={contentRef}
               className={`prose ${fontSizeClass} max-w-none`}
               onMouseUp={handleMouseUp}
+              onClick={handleMarkClick}
             />
 
             {popup && (
@@ -355,52 +376,52 @@ export function ArticleReader({
             )}
 
             {notePopup && (
-              <div
-                className="fixed z-50 bg-card border rounded-lg shadow-lg w-80"
-                style={{ left: Math.min(notePopup.x, window.innerWidth - 340), top: notePopup.y }}
-              >
-                <div className="p-3 border-b">
-                  <p className="text-xs text-muted-foreground line-clamp-2">&ldquo;{notePopup.text}&rdquo;</p>
-                </div>
-                <div className="p-3 space-y-3 max-h-64 overflow-y-auto">
-                  {notePopup.notes.map((n, i) => (
-                    <div key={n.id}>
-                      {i > 0 && <hr className="my-2 border-muted" />}
-                      {editingNoteInPopup === n.id ? (
-                        <div>
-                          <textarea
-                            value={editNoteText}
-                            onChange={(e) => setEditNoteText(e.target.value)}
-                            className="w-full border rounded-md p-2 text-sm min-h-[60px]"
-                          />
-                          <div className="flex gap-2 mt-1 justify-end">
-                            <button onClick={async () => {
-                              await updateNote(n.id, editNoteText);
-                              setEditingNoteInPopup(null);
-                              setNotePopup(null);
-                            }} className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded">保存</button>
-                            <button onClick={() => setEditingNoteInPopup(null)} className="text-xs px-2 py-1 border rounded">取消</button>
+                <div
+                  className="note-popup-panel fixed z-50 bg-card border rounded-lg shadow-lg w-80"
+                  style={{ left: Math.min(notePopup.x, window.innerWidth - 340), top: notePopup.y }}
+                >
+                  <div className="p-3 border-b">
+                    <p className="text-xs text-muted-foreground line-clamp-2">&ldquo;{notePopup.text}&rdquo;</p>
+                  </div>
+                  <div className="p-3 space-y-3 max-h-64 overflow-y-auto">
+                    {notePopup.notes.map((n, i) => (
+                      <div key={n.id}>
+                        {i > 0 && <hr className="my-2 border-muted" />}
+                        {editingNoteInPopup === n.id ? (
+                          <div>
+                            <textarea
+                              value={editNoteText}
+                              onChange={(e) => setEditNoteText(e.target.value)}
+                              className="w-full border rounded-md p-2 text-sm min-h-[60px]"
+                            />
+                            <div className="flex gap-2 mt-1 justify-end">
+                              <button onClick={async () => {
+                                await updateNote(n.id, editNoteText);
+                                setEditingNoteInPopup(null);
+                                setNotePopup(null);
+                              }} className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded">保存</button>
+                              <button onClick={() => setEditingNoteInPopup(null)} className="text-xs px-2 py-1 border rounded">取消</button>
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <p className="text-sm whitespace-pre-wrap">{n.note || <span className="text-muted-foreground italic">无笔记</span>}</p>
-                          <div className="flex gap-2 mt-1">
-                            <button onClick={() => {
-                              setEditingNoteInPopup(n.id);
-                              setEditNoteText(n.note || "");
-                            }} className="text-xs text-primary">编辑</button>
-                            <button onClick={async () => {
-                              await deleteHighlight(n.id);
-                              setNotePopup(null);
-                            }} className="text-xs text-red-500">删除</button>
+                        ) : (
+                          <div>
+                            <p className="text-sm whitespace-pre-wrap">{n.note || <span className="text-muted-foreground italic">无笔记</span>}</p>
+                            <div className="flex gap-2 mt-1">
+                              <button onClick={() => {
+                                setEditingNoteInPopup(n.id);
+                                setEditNoteText(n.note || "");
+                              }} className="text-xs text-primary">编辑</button>
+                              <button onClick={async () => {
+                                await deleteHighlight(n.id);
+                                setNotePopup(null);
+                              }} className="text-xs text-red-500">删除</button>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
             )}
 
             {highlights.length > 0 && (

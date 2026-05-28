@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  UserSelectedCategory: 'UserSelectedCategory',
   ArticleCategory: 'ArticleCategory',
   Article: 'Article',
   ArticleHighlight: 'ArticleHighlight',
@@ -83,11 +84,22 @@ export const UserScalarFieldEnum = {
   name: 'name',
   role: 'role',
   disabled: 'disabled',
+  dailyNewLimit: 'dailyNewLimit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserSelectedCategoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserSelectedCategoryScalarFieldEnum = (typeof UserSelectedCategoryScalarFieldEnum)[keyof typeof UserSelectedCategoryScalarFieldEnum]
 
 
 export const ArticleCategoryScalarFieldEnum = {
@@ -109,6 +121,7 @@ export const ArticleScalarFieldEnum = {
   content: 'content',
   summary: 'summary',
   categoryId: 'categoryId',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -150,6 +163,7 @@ export const QuestionScalarFieldEnum = {
   content: 'content',
   answer: 'answer',
   categoryId: 'categoryId',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

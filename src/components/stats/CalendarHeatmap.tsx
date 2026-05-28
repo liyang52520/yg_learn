@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 interface DailyRecordSummary {
   date: Date;
@@ -9,16 +9,16 @@ interface DailyRecordSummary {
 }
 
 export function CalendarHeatmap({ records }: { records: DailyRecordSummary[] }) {
-  const dayData = useMemo(() => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  const weeks = useMemo(() => {
     const map = new Map<string, number>();
     records.forEach((r) => {
       const key = new Date(r.date).toISOString().split("T")[0];
       map.set(key, (r.questionsLearned || 0) + (r.questionsReviewed || 0));
     });
-    return map;
-  }, [records]);
 
-  const weeks = useMemo(() => {
     const result: { date: Date; count: number }[][] = [];
     const today = new Date();
     let d = new Date(today);
@@ -28,7 +28,7 @@ export function CalendarHeatmap({ records }: { records: DailyRecordSummary[] }) 
     let week: { date: Date; count: number }[] = [];
     while (d <= today) {
       const key = d.toISOString().split("T")[0];
-      week.push({ date: new Date(d), count: dayData.get(key) || 0 });
+      week.push({ date: new Date(d), count: map.get(key) || 0 });
       if (week.length === 7) {
         result.push(week);
         week = [];
@@ -37,17 +37,26 @@ export function CalendarHeatmap({ records }: { records: DailyRecordSummary[] }) 
     }
     if (week.length > 0) result.push(week);
     return result;
-  }, [dayData]);
+  }, [records]);
 
-  const maxCount = Math.max(...Array.from(dayData.values()), 1);
+  const maxCount = Math.max(...weeks.flat().map((d) => d.count), 1);
 
   function getColor(count: number) {
     if (count === 0) return "bg-muted/30";
-    const intensity = Math.min(count / maxCount, 1);
+    const intensity = count / maxCount;
     if (intensity < 0.25) return "bg-green-200";
     if (intensity < 0.5) return "bg-green-300";
     if (intensity < 0.75) return "bg-green-400";
     return "bg-green-500";
+  }
+
+  if (!mounted) {
+    return (
+      <div className="bg-card border rounded-lg p-4">
+        <h2 className="font-semibold mb-4">打卡日历（近一年）</h2>
+        <div className="h-[120px]" />
+      </div>
+    );
   }
 
   return (
@@ -61,7 +70,7 @@ export function CalendarHeatmap({ records }: { records: DailyRecordSummary[] }) 
                 <div
                   key={day.date.toISOString()}
                   className={`w-3 h-3 rounded-sm ${getColor(day.count)}`}
-                  title={`${day.date.toLocaleDateString()}: ${day.count} 题`}
+                  title={`${day.date.getFullYear()}-${(day.date.getMonth() + 1).toString().padStart(2, "0")}-${day.date.getDate().toString().padStart(2, "0")}: ${day.count} 题`}
                 />
               ))}
             </div>

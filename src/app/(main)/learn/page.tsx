@@ -9,7 +9,7 @@ export default async function LearnPage({
   const { category } = await searchParams;
 
   const articles = await prisma.article.findMany({
-    where: category ? { category: { slug: category } } : {},
+    where: { status: "published", ...(category ? { category: { slug: category } } : {}) },
     include: { category: true },
     orderBy: { createdAt: "desc" },
   });

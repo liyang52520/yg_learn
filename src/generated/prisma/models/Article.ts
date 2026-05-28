@@ -42,6 +42,7 @@ export type ArticleMinAggregateOutputType = {
   content: string | null
   summary: string | null
   categoryId: number | null
+  status: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,6 +53,7 @@ export type ArticleMaxAggregateOutputType = {
   content: string | null
   summary: string | null
   categoryId: number | null
+  status: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +64,7 @@ export type ArticleCountAggregateOutputType = {
   content: number
   summary: number
   categoryId: number
+  status: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -84,6 +87,7 @@ export type ArticleMinAggregateInputType = {
   content?: true
   summary?: true
   categoryId?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -94,6 +98,7 @@ export type ArticleMaxAggregateInputType = {
   content?: true
   summary?: true
   categoryId?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -104,6 +109,7 @@ export type ArticleCountAggregateInputType = {
   content?: true
   summary?: true
   categoryId?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -201,6 +207,7 @@ export type ArticleGroupByOutputType = {
   content: string
   summary: string | null
   categoryId: number
+  status: string
   createdAt: Date
   updatedAt: Date
   _count: ArticleCountAggregateOutputType | null
@@ -234,6 +241,7 @@ export type ArticleWhereInput = {
   content?: Prisma.StringFilter<"Article"> | string
   summary?: Prisma.StringNullableFilter<"Article"> | string | null
   categoryId?: Prisma.IntFilter<"Article"> | number
+  status?: Prisma.StringFilter<"Article"> | string
   createdAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   category?: Prisma.XOR<Prisma.ArticleCategoryScalarRelationFilter, Prisma.ArticleCategoryWhereInput>
@@ -246,6 +254,7 @@ export type ArticleOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   summary?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   category?: Prisma.ArticleCategoryOrderByWithRelationInput
@@ -254,18 +263,19 @@ export type ArticleOrderByWithRelationInput = {
 
 export type ArticleWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  title?: string
   AND?: Prisma.ArticleWhereInput | Prisma.ArticleWhereInput[]
   OR?: Prisma.ArticleWhereInput[]
   NOT?: Prisma.ArticleWhereInput | Prisma.ArticleWhereInput[]
-  title?: Prisma.StringFilter<"Article"> | string
   content?: Prisma.StringFilter<"Article"> | string
   summary?: Prisma.StringNullableFilter<"Article"> | string | null
   categoryId?: Prisma.IntFilter<"Article"> | number
+  status?: Prisma.StringFilter<"Article"> | string
   createdAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   category?: Prisma.XOR<Prisma.ArticleCategoryScalarRelationFilter, Prisma.ArticleCategoryWhereInput>
   highlights?: Prisma.ArticleHighlightListRelationFilter
-}, "id">
+}, "id" | "title">
 
 export type ArticleOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -273,6 +283,7 @@ export type ArticleOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   summary?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ArticleCountOrderByAggregateInput
@@ -291,6 +302,7 @@ export type ArticleScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"Article"> | string
   summary?: Prisma.StringNullableWithAggregatesFilter<"Article"> | string | null
   categoryId?: Prisma.IntWithAggregatesFilter<"Article"> | number
+  status?: Prisma.StringWithAggregatesFilter<"Article"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Article"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Article"> | Date | string
 }
@@ -299,6 +311,7 @@ export type ArticleCreateInput = {
   title: string
   content: string
   summary?: string | null
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.ArticleCategoryCreateNestedOneWithoutArticlesInput
@@ -311,6 +324,7 @@ export type ArticleUncheckedCreateInput = {
   content: string
   summary?: string | null
   categoryId: number
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightUncheckedCreateNestedManyWithoutArticleInput
@@ -320,6 +334,7 @@ export type ArticleUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.ArticleCategoryUpdateOneRequiredWithoutArticlesNestedInput
@@ -332,6 +347,7 @@ export type ArticleUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUncheckedUpdateManyWithoutArticleNestedInput
@@ -343,6 +359,7 @@ export type ArticleCreateManyInput = {
   content: string
   summary?: string | null
   categoryId: number
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -351,6 +368,7 @@ export type ArticleUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -361,6 +379,7 @@ export type ArticleUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -381,6 +400,7 @@ export type ArticleCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   summary?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -396,6 +416,7 @@ export type ArticleMaxOrderByAggregateInput = {
   content?: Prisma.SortOrder
   summary?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -406,6 +427,7 @@ export type ArticleMinOrderByAggregateInput = {
   content?: Prisma.SortOrder
   summary?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -480,6 +502,7 @@ export type ArticleCreateWithoutCategoryInput = {
   title: string
   content: string
   summary?: string | null
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightCreateNestedManyWithoutArticleInput
@@ -490,6 +513,7 @@ export type ArticleUncheckedCreateWithoutCategoryInput = {
   title: string
   content: string
   summary?: string | null
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightUncheckedCreateNestedManyWithoutArticleInput
@@ -529,6 +553,7 @@ export type ArticleScalarWhereInput = {
   content?: Prisma.StringFilter<"Article"> | string
   summary?: Prisma.StringNullableFilter<"Article"> | string | null
   categoryId?: Prisma.IntFilter<"Article"> | number
+  status?: Prisma.StringFilter<"Article"> | string
   createdAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Article"> | Date | string
 }
@@ -537,6 +562,7 @@ export type ArticleCreateWithoutHighlightsInput = {
   title: string
   content: string
   summary?: string | null
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.ArticleCategoryCreateNestedOneWithoutArticlesInput
@@ -548,6 +574,7 @@ export type ArticleUncheckedCreateWithoutHighlightsInput = {
   content: string
   summary?: string | null
   categoryId: number
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -572,6 +599,7 @@ export type ArticleUpdateWithoutHighlightsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.ArticleCategoryUpdateOneRequiredWithoutArticlesNestedInput
@@ -583,6 +611,7 @@ export type ArticleUncheckedUpdateWithoutHighlightsInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -592,6 +621,7 @@ export type ArticleCreateManyCategoryInput = {
   title: string
   content: string
   summary?: string | null
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -600,6 +630,7 @@ export type ArticleUpdateWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUpdateManyWithoutArticleNestedInput
@@ -610,6 +641,7 @@ export type ArticleUncheckedUpdateWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUncheckedUpdateManyWithoutArticleNestedInput
@@ -620,6 +652,7 @@ export type ArticleUncheckedUpdateManyWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -661,6 +694,7 @@ export type ArticleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   content?: boolean
   summary?: boolean
   categoryId?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.ArticleCategoryDefaultArgs<ExtArgs>
@@ -674,6 +708,7 @@ export type ArticleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   content?: boolean
   summary?: boolean
   categoryId?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.ArticleCategoryDefaultArgs<ExtArgs>
@@ -685,6 +720,7 @@ export type ArticleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   content?: boolean
   summary?: boolean
   categoryId?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.ArticleCategoryDefaultArgs<ExtArgs>
@@ -696,11 +732,12 @@ export type ArticleSelectScalar = {
   content?: boolean
   summary?: boolean
   categoryId?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "summary" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["article"]>
+export type ArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "summary" | "categoryId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["article"]>
 export type ArticleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.ArticleCategoryDefaultArgs<ExtArgs>
   highlights?: boolean | Prisma.Article$highlightsArgs<ExtArgs>
@@ -725,6 +762,7 @@ export type $ArticlePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     content: string
     summary: string | null
     categoryId: number
+    status: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["article"]>
@@ -1157,6 +1195,7 @@ export interface ArticleFieldRefs {
   readonly content: Prisma.FieldRef<"Article", 'String'>
   readonly summary: Prisma.FieldRef<"Article", 'String'>
   readonly categoryId: Prisma.FieldRef<"Article", 'Int'>
+  readonly status: Prisma.FieldRef<"Article", 'String'>
   readonly createdAt: Prisma.FieldRef<"Article", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Article", 'DateTime'>
 }

@@ -8,20 +8,34 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  passwordHash String
-  name      String
-  role      String   @default("USER")
-  disabled  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  role          String   @default("USER")
+  disabled      Boolean  @default(false)
+  dailyNewLimit Int      @default(5)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  highlights      ArticleHighlight[]
-  progressRecords UserQuestionProgress[]
-  questionNotes   QuestionNote[]
-  bookmarks       Bookmark[]
-  dailyRecords    DailyRecord[]
+  highlights          ArticleHighlight[]
+  progressRecords     UserQuestionProgress[]
+  questionNotes       QuestionNote[]
+  bookmarks           Bookmark[]
+  dailyRecords        DailyRecord[]
+  selectedCategories  UserSelectedCategory[]
+}
+
+model UserSelectedCategory {
+  id         Int              @id @default(autoincrement())
+  userId     Int
+  categoryId Int
+  createdAt  DateTime         @default(now())
+
+  user     User             @relation(fields: [userId], references: [id])
+  category QuestionCategory @relation(fields: [categoryId], references: [id])
+
+  @@unique([userId, categoryId])
 }
 
 model ArticleCategory {
@@ -38,10 +52,11 @@ model ArticleCategory {
 
 model Article {
   id         Int      @id @default(autoincrement())
-  title      String
+  title      String   @unique
   content    String
   summary    String?
   categoryId Int
+  status     String   @default("draft")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -73,15 +88,17 @@ model QuestionCategory {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  questions Question[]
+  questions     Question[]
+  userSelections UserSelectedCategory[]
 }
 
 model Question {
   id         Int      @id @default(autoincrement())
-  title      String
+  title      String   @unique
   content    String
   answer     String
   categoryId Int
+  status     String   @default("draft")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

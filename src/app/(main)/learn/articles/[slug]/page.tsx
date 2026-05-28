@@ -7,7 +7,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const session = await auth();
   const article = await prisma.article.findUnique({
-    where: { id: Number(slug) },
+    where: { id: Number(slug), status: "published" },
     include: { category: true },
   });
   if (!article) notFound();

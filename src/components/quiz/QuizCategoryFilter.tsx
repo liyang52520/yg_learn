@@ -3,7 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function QuizCategoryFilter({ categories, current }: { categories: { slug: string; name: string }[]; current: string }) {
+export function QuizCategoryFilter({
+  categories, current,
+}: {
+  categories: { id: number; slug: string; name: string }[];
+  current: string;
+}) {
   const router = useRouter();
   const [value, setValue] = useState(current);
 

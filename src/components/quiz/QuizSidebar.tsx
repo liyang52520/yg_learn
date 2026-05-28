@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { BookOpen, RefreshCw, Layers, Bookmark } from "lucide-react";
+import { BookOpen, Layers, Bookmark } from "lucide-react";
 
 const navItems = [
   { href: "/quiz/learn", label: "今日学习", icon: BookOpen },
-  { href: "/quiz/review", label: "复习模式", icon: RefreshCw },
   { href: "/quiz/categories", label: "题库", icon: Layers },
   { href: "/quiz/bookmarks", label: "收藏", icon: Bookmark },
 ] as const;

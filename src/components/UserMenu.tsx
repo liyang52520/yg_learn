@@ -29,6 +29,7 @@ export function UserMenu({ user }: { user: any }) {
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-card border rounded-md shadow-lg z-50 py-1">
           <Link href="/stats" className="block px-4 py-2 text-sm hover:bg-muted" onClick={() => setOpen(false)}>统计</Link>
+          <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-muted" onClick={() => setOpen(false)}>学习设置</Link>
           {(user as any).role === "ADMIN" && (
             <Link href="/admin" className="block px-4 py-2 text-sm hover:bg-muted" onClick={() => setOpen(false)}>管理后台</Link>
           )}

@@ -13,6 +13,22 @@ export async function POST(req: Request) {
     where: { userId_questionId: { userId, questionId } },
   });
 
+  // Prevent multiple submissions for the same question on the same day
+  if (existing) {
+    const today = new Date();
+    const lastUpdated = new Date(existing.updatedAt);
+    if (
+      lastUpdated.getFullYear() === today.getFullYear() &&
+      lastUpdated.getMonth() === today.getMonth() &&
+      lastUpdated.getDate() === today.getDate()
+    ) {
+      return NextResponse.json(
+        { error: "今天已经评价过这道题，明天再回来复习吧" },
+        { status: 429 }
+      );
+    }
+  }
+
   const { ease, interval, repetitions, nextReviewDate } = calculateSM2(
     existing?.ease || 2.5,
     existing?.interval || 0,

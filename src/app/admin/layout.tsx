@@ -14,7 +14,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <div className="text-sm font-medium text-muted-foreground mt-4 mb-1">题目管理</div>
         <Link href="/admin/questions/categories" className="block text-sm py-1 pl-2 hover:text-primary">题目分类</Link>
         <Link href="/admin/questions" className="block text-sm py-1 pl-2 hover:text-primary">题目列表</Link>
-        <div className="pt-4 mt-4 border-t">
+        <div className="pt-4 mt-4 border-t space-y-1">
+          <Link href="/admin/backup" className="block text-sm py-1 hover:text-primary">备份与恢复</Link>
           <Link href="/" className="block text-sm py-1 text-muted-foreground hover:text-foreground">← 返回前台</Link>
         </div>
       </aside>

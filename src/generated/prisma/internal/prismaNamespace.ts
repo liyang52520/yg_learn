@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  UserSelectedCategory: 'UserSelectedCategory',
   ArticleCategory: 'ArticleCategory',
   Article: 'Article',
   ArticleHighlight: 'ArticleHighlight',
@@ -409,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "articleCategory" | "article" | "articleHighlight" | "questionCategory" | "question" | "userQuestionProgress" | "questionNote" | "bookmark" | "dailyRecord"
+    modelProps: "user" | "userSelectedCategory" | "articleCategory" | "article" | "articleHighlight" | "questionCategory" | "question" | "userQuestionProgress" | "questionNote" | "bookmark" | "dailyRecord"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -484,6 +485,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserSelectedCategory: {
+      payload: Prisma.$UserSelectedCategoryPayload<ExtArgs>
+      fields: Prisma.UserSelectedCategoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserSelectedCategoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserSelectedCategoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>
+        }
+        findFirst: {
+          args: Prisma.UserSelectedCategoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserSelectedCategoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>
+        }
+        findMany: {
+          args: Prisma.UserSelectedCategoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>[]
+        }
+        create: {
+          args: Prisma.UserSelectedCategoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>
+        }
+        createMany: {
+          args: Prisma.UserSelectedCategoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserSelectedCategoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>[]
+        }
+        delete: {
+          args: Prisma.UserSelectedCategoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>
+        }
+        update: {
+          args: Prisma.UserSelectedCategoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserSelectedCategoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserSelectedCategoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserSelectedCategoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserSelectedCategoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSelectedCategoryPayload>
+        }
+        aggregate: {
+          args: Prisma.UserSelectedCategoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserSelectedCategory>
+        }
+        groupBy: {
+          args: Prisma.UserSelectedCategoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserSelectedCategoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserSelectedCategoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserSelectedCategoryCountAggregateOutputType> | number
         }
       }
     }
@@ -1196,11 +1271,22 @@ export const UserScalarFieldEnum = {
   name: 'name',
   role: 'role',
   disabled: 'disabled',
+  dailyNewLimit: 'dailyNewLimit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserSelectedCategoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserSelectedCategoryScalarFieldEnum = (typeof UserSelectedCategoryScalarFieldEnum)[keyof typeof UserSelectedCategoryScalarFieldEnum]
 
 
 export const ArticleCategoryScalarFieldEnum = {
@@ -1222,6 +1308,7 @@ export const ArticleScalarFieldEnum = {
   content: 'content',
   summary: 'summary',
   categoryId: 'categoryId',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1263,6 +1350,7 @@ export const QuestionScalarFieldEnum = {
   content: 'content',
   answer: 'answer',
   categoryId: 'categoryId',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1488,6 +1576,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  userSelectedCategory?: Prisma.UserSelectedCategoryOmit
   articleCategory?: Prisma.ArticleCategoryOmit
   article?: Prisma.ArticleOmit
   articleHighlight?: Prisma.ArticleHighlightOmit

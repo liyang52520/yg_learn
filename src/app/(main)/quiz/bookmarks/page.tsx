@@ -6,13 +6,13 @@ export default async function BookmarksPage() {
   const session = await auth();
   const userId = Number(session?.user?.id);
   const bookmarks = await prisma.bookmark.findMany({
-    where: { userId },
+    where: { userId, question: { status: "published" } },
     include: { question: { include: { category: true } } },
     orderBy: { createdAt: "desc" },
   });
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <>
       <h1 className="text-2xl font-bold mb-6">收藏的题目</h1>
       <div className="space-y-3">
         {bookmarks.map((b) => (
@@ -23,6 +23,6 @@ export default async function BookmarksPage() {
         ))}
         {bookmarks.length === 0 && <p className="text-muted-foreground">暂无收藏</p>}
       </div>
-    </div>
+    </>
   );
 }

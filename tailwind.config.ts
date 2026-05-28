@@ -39,6 +39,14 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            "h2, h3": { marginTop: "1.25em" },
+            'h2:first-child': { marginTop: 0 },
+          },
+        },
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

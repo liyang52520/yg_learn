@@ -42,6 +42,7 @@ export type QuestionMinAggregateOutputType = {
   content: string | null
   answer: string | null
   categoryId: number | null
+  status: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,6 +53,7 @@ export type QuestionMaxAggregateOutputType = {
   content: string | null
   answer: string | null
   categoryId: number | null
+  status: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +64,7 @@ export type QuestionCountAggregateOutputType = {
   content: number
   answer: number
   categoryId: number
+  status: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -84,6 +87,7 @@ export type QuestionMinAggregateInputType = {
   content?: true
   answer?: true
   categoryId?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -94,6 +98,7 @@ export type QuestionMaxAggregateInputType = {
   content?: true
   answer?: true
   categoryId?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -104,6 +109,7 @@ export type QuestionCountAggregateInputType = {
   content?: true
   answer?: true
   categoryId?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -201,6 +207,7 @@ export type QuestionGroupByOutputType = {
   content: string
   answer: string
   categoryId: number
+  status: string
   createdAt: Date
   updatedAt: Date
   _count: QuestionCountAggregateOutputType | null
@@ -234,6 +241,7 @@ export type QuestionWhereInput = {
   content?: Prisma.StringFilter<"Question"> | string
   answer?: Prisma.StringFilter<"Question"> | string
   categoryId?: Prisma.IntFilter<"Question"> | number
+  status?: Prisma.StringFilter<"Question"> | string
   createdAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   category?: Prisma.XOR<Prisma.QuestionCategoryScalarRelationFilter, Prisma.QuestionCategoryWhereInput>
@@ -248,6 +256,7 @@ export type QuestionOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   answer?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   category?: Prisma.QuestionCategoryOrderByWithRelationInput
@@ -258,20 +267,21 @@ export type QuestionOrderByWithRelationInput = {
 
 export type QuestionWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  title?: string
   AND?: Prisma.QuestionWhereInput | Prisma.QuestionWhereInput[]
   OR?: Prisma.QuestionWhereInput[]
   NOT?: Prisma.QuestionWhereInput | Prisma.QuestionWhereInput[]
-  title?: Prisma.StringFilter<"Question"> | string
   content?: Prisma.StringFilter<"Question"> | string
   answer?: Prisma.StringFilter<"Question"> | string
   categoryId?: Prisma.IntFilter<"Question"> | number
+  status?: Prisma.StringFilter<"Question"> | string
   createdAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   category?: Prisma.XOR<Prisma.QuestionCategoryScalarRelationFilter, Prisma.QuestionCategoryWhereInput>
   progressRecords?: Prisma.UserQuestionProgressListRelationFilter
   bookmarks?: Prisma.BookmarkListRelationFilter
   notes?: Prisma.QuestionNoteListRelationFilter
-}, "id">
+}, "id" | "title">
 
 export type QuestionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -279,6 +289,7 @@ export type QuestionOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   answer?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.QuestionCountOrderByAggregateInput
@@ -297,6 +308,7 @@ export type QuestionScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"Question"> | string
   answer?: Prisma.StringWithAggregatesFilter<"Question"> | string
   categoryId?: Prisma.IntWithAggregatesFilter<"Question"> | number
+  status?: Prisma.StringWithAggregatesFilter<"Question"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Question"> | Date | string
 }
@@ -305,6 +317,7 @@ export type QuestionCreateInput = {
   title: string
   content: string
   answer: string
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.QuestionCategoryCreateNestedOneWithoutQuestionsInput
@@ -319,6 +332,7 @@ export type QuestionUncheckedCreateInput = {
   content: string
   answer: string
   categoryId: number
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutQuestionInput
@@ -330,6 +344,7 @@ export type QuestionUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.QuestionCategoryUpdateOneRequiredWithoutQuestionsNestedInput
@@ -344,6 +359,7 @@ export type QuestionUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutQuestionNestedInput
@@ -357,6 +373,7 @@ export type QuestionCreateManyInput = {
   content: string
   answer: string
   categoryId: number
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -365,6 +382,7 @@ export type QuestionUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -375,6 +393,7 @@ export type QuestionUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -395,6 +414,7 @@ export type QuestionCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   answer?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -410,6 +430,7 @@ export type QuestionMaxOrderByAggregateInput = {
   content?: Prisma.SortOrder
   answer?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -420,6 +441,7 @@ export type QuestionMinOrderByAggregateInput = {
   content?: Prisma.SortOrder
   answer?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -522,6 +544,7 @@ export type QuestionCreateWithoutCategoryInput = {
   title: string
   content: string
   answer: string
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   progressRecords?: Prisma.UserQuestionProgressCreateNestedManyWithoutQuestionInput
@@ -534,6 +557,7 @@ export type QuestionUncheckedCreateWithoutCategoryInput = {
   title: string
   content: string
   answer: string
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutQuestionInput
@@ -575,6 +599,7 @@ export type QuestionScalarWhereInput = {
   content?: Prisma.StringFilter<"Question"> | string
   answer?: Prisma.StringFilter<"Question"> | string
   categoryId?: Prisma.IntFilter<"Question"> | number
+  status?: Prisma.StringFilter<"Question"> | string
   createdAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Question"> | Date | string
 }
@@ -583,6 +608,7 @@ export type QuestionCreateWithoutProgressRecordsInput = {
   title: string
   content: string
   answer: string
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.QuestionCategoryCreateNestedOneWithoutQuestionsInput
@@ -596,6 +622,7 @@ export type QuestionUncheckedCreateWithoutProgressRecordsInput = {
   content: string
   answer: string
   categoryId: number
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   bookmarks?: Prisma.BookmarkUncheckedCreateNestedManyWithoutQuestionInput
@@ -622,6 +649,7 @@ export type QuestionUpdateWithoutProgressRecordsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.QuestionCategoryUpdateOneRequiredWithoutQuestionsNestedInput
@@ -635,6 +663,7 @@ export type QuestionUncheckedUpdateWithoutProgressRecordsInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookmarks?: Prisma.BookmarkUncheckedUpdateManyWithoutQuestionNestedInput
@@ -645,6 +674,7 @@ export type QuestionCreateWithoutNotesInput = {
   title: string
   content: string
   answer: string
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.QuestionCategoryCreateNestedOneWithoutQuestionsInput
@@ -658,6 +688,7 @@ export type QuestionUncheckedCreateWithoutNotesInput = {
   content: string
   answer: string
   categoryId: number
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutQuestionInput
@@ -684,6 +715,7 @@ export type QuestionUpdateWithoutNotesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.QuestionCategoryUpdateOneRequiredWithoutQuestionsNestedInput
@@ -697,6 +729,7 @@ export type QuestionUncheckedUpdateWithoutNotesInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutQuestionNestedInput
@@ -707,6 +740,7 @@ export type QuestionCreateWithoutBookmarksInput = {
   title: string
   content: string
   answer: string
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.QuestionCategoryCreateNestedOneWithoutQuestionsInput
@@ -720,6 +754,7 @@ export type QuestionUncheckedCreateWithoutBookmarksInput = {
   content: string
   answer: string
   categoryId: number
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutQuestionInput
@@ -746,6 +781,7 @@ export type QuestionUpdateWithoutBookmarksInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.QuestionCategoryUpdateOneRequiredWithoutQuestionsNestedInput
@@ -759,6 +795,7 @@ export type QuestionUncheckedUpdateWithoutBookmarksInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutQuestionNestedInput
@@ -770,6 +807,7 @@ export type QuestionCreateManyCategoryInput = {
   title: string
   content: string
   answer: string
+  status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -778,6 +816,7 @@ export type QuestionUpdateWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progressRecords?: Prisma.UserQuestionProgressUpdateManyWithoutQuestionNestedInput
@@ -790,6 +829,7 @@ export type QuestionUncheckedUpdateWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutQuestionNestedInput
@@ -802,6 +842,7 @@ export type QuestionUncheckedUpdateManyWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -861,6 +902,7 @@ export type QuestionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   content?: boolean
   answer?: boolean
   categoryId?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.QuestionCategoryDefaultArgs<ExtArgs>
@@ -876,6 +918,7 @@ export type QuestionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   content?: boolean
   answer?: boolean
   categoryId?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.QuestionCategoryDefaultArgs<ExtArgs>
@@ -887,6 +930,7 @@ export type QuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   content?: boolean
   answer?: boolean
   categoryId?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.QuestionCategoryDefaultArgs<ExtArgs>
@@ -898,11 +942,12 @@ export type QuestionSelectScalar = {
   content?: boolean
   answer?: boolean
   categoryId?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "answer" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
+export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "answer" | "categoryId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
 export type QuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.QuestionCategoryDefaultArgs<ExtArgs>
   progressRecords?: boolean | Prisma.Question$progressRecordsArgs<ExtArgs>
@@ -931,6 +976,7 @@ export type $QuestionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     content: string
     answer: string
     categoryId: number
+    status: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["question"]>
@@ -1365,6 +1411,7 @@ export interface QuestionFieldRefs {
   readonly content: Prisma.FieldRef<"Question", 'String'>
   readonly answer: Prisma.FieldRef<"Question", 'String'>
   readonly categoryId: Prisma.FieldRef<"Question", 'Int'>
+  readonly status: Prisma.FieldRef<"Question", 'String'>
   readonly createdAt: Prisma.FieldRef<"Question", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Question", 'DateTime'>
 }

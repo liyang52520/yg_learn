@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function AnswerForm({
-  question, progress, isBookmarked: initBookmarked, notes: initNotes, userId, mode, prevId, nextId, questionIds,
+  question, progress, isBookmarked: initBookmarked, notes: initNotes, userId, prevId, nextId, questionIds,
 }: any) {
   const router = useRouter();
   const [userAnswer, setUserAnswer] = useState("");
@@ -22,13 +22,20 @@ export function AnswerForm({
 
   async function handleScore(s: number) {
     setScore(s);
-    await fetch("/api/progress", {
+    const res = await fetch("/api/progress", {
       method: "POST",
       body: JSON.stringify({ questionId: question.id, score: s }),
     });
+    if (res.status === 429) {
+      const data = await res.json();
+      alert(data.error);
+      setScore(null);
+      return;
+    }
+    const questionMode = progress ? "review" : "learn";
     await fetch("/api/daily-record", {
       method: "POST",
-      body: JSON.stringify({ questionId: question.id, score: s, mode }),
+      body: JSON.stringify({ questionId: question.id, score: s, mode: questionMode }),
     });
   }
 
@@ -63,15 +70,14 @@ export function AnswerForm({
   function goToQuestion(id: number) {
     const params = new URLSearchParams();
     params.set("ids", questionIds.join(","));
-    if (mode) params.set("mode", mode);
     router.push(`/quiz/${id}?${params.toString()}`);
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <>
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
         <span className="bg-muted px-2 py-0.5 rounded">{question.category.name}</span>
-        {mode && <span className="bg-muted px-2 py-0.5 rounded">{mode === "review" ? "复习" : "学习"}</span>}
+        <span className="bg-muted px-2 py-0.5 rounded">{progress ? "复习" : "新题"}</span>
         {progress && <span>复习次数: {progress.repetitions}</span>}
       </div>
 
@@ -180,6 +186,6 @@ export function AnswerForm({
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

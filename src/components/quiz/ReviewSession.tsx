@@ -38,16 +38,20 @@ export function ReviewSession({ questions }: { questions: ReviewQuestion[] }) {
     setSaving(true);
     setError("");
     try {
-      await Promise.all([
-        fetch("/api/progress", {
-          method: "POST",
-          body: JSON.stringify({ questionId: question.questionId, score: s }),
-        }),
-        fetch("/api/daily-record", {
-          method: "POST",
-          body: JSON.stringify({ questionId: question.questionId, score: s, mode: "review" }),
-        }),
-      ]);
+      const progressRes = await fetch("/api/progress", {
+        method: "POST",
+        body: JSON.stringify({ questionId: question.questionId, score: s }),
+      });
+      if (progressRes.status === 429) {
+        const data = await progressRes.json();
+        setError(data.error);
+        setSaving(false);
+        return;
+      }
+      await fetch("/api/daily-record", {
+        method: "POST",
+        body: JSON.stringify({ questionId: question.questionId, score: s, mode: "review" }),
+      });
       setScore(s);
       setCompleted(completed + 1);
     } catch {

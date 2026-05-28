@@ -28,10 +28,12 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   id: number | null
+  dailyNewLimit: number | null
 }
 
 export type UserSumAggregateOutputType = {
   id: number | null
+  dailyNewLimit: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -41,6 +43,7 @@ export type UserMinAggregateOutputType = {
   name: string | null
   role: string | null
   disabled: boolean | null
+  dailyNewLimit: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,6 +55,7 @@ export type UserMaxAggregateOutputType = {
   name: string | null
   role: string | null
   disabled: boolean | null
+  dailyNewLimit: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -63,6 +67,7 @@ export type UserCountAggregateOutputType = {
   name: number
   role: number
   disabled: number
+  dailyNewLimit: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -71,10 +76,12 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   id?: true
+  dailyNewLimit?: true
 }
 
 export type UserSumAggregateInputType = {
   id?: true
+  dailyNewLimit?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -84,6 +91,7 @@ export type UserMinAggregateInputType = {
   name?: true
   role?: true
   disabled?: true
+  dailyNewLimit?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -95,6 +103,7 @@ export type UserMaxAggregateInputType = {
   name?: true
   role?: true
   disabled?: true
+  dailyNewLimit?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +115,7 @@ export type UserCountAggregateInputType = {
   name?: true
   role?: true
   disabled?: true
+  dailyNewLimit?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -204,6 +214,7 @@ export type UserGroupByOutputType = {
   name: string
   role: string
   disabled: boolean
+  dailyNewLimit: number
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -238,6 +249,7 @@ export type UserWhereInput = {
   name?: Prisma.StringFilter<"User"> | string
   role?: Prisma.StringFilter<"User"> | string
   disabled?: Prisma.BoolFilter<"User"> | boolean
+  dailyNewLimit?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   highlights?: Prisma.ArticleHighlightListRelationFilter
@@ -245,6 +257,7 @@ export type UserWhereInput = {
   questionNotes?: Prisma.QuestionNoteListRelationFilter
   bookmarks?: Prisma.BookmarkListRelationFilter
   dailyRecords?: Prisma.DailyRecordListRelationFilter
+  selectedCategories?: Prisma.UserSelectedCategoryListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -254,6 +267,7 @@ export type UserOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   role?: Prisma.SortOrder
   disabled?: Prisma.SortOrder
+  dailyNewLimit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   highlights?: Prisma.ArticleHighlightOrderByRelationAggregateInput
@@ -261,6 +275,7 @@ export type UserOrderByWithRelationInput = {
   questionNotes?: Prisma.QuestionNoteOrderByRelationAggregateInput
   bookmarks?: Prisma.BookmarkOrderByRelationAggregateInput
   dailyRecords?: Prisma.DailyRecordOrderByRelationAggregateInput
+  selectedCategories?: Prisma.UserSelectedCategoryOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -273,6 +288,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"User"> | string
   role?: Prisma.StringFilter<"User"> | string
   disabled?: Prisma.BoolFilter<"User"> | boolean
+  dailyNewLimit?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   highlights?: Prisma.ArticleHighlightListRelationFilter
@@ -280,6 +296,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   questionNotes?: Prisma.QuestionNoteListRelationFilter
   bookmarks?: Prisma.BookmarkListRelationFilter
   dailyRecords?: Prisma.DailyRecordListRelationFilter
+  selectedCategories?: Prisma.UserSelectedCategoryListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -289,6 +306,7 @@ export type UserOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   role?: Prisma.SortOrder
   disabled?: Prisma.SortOrder
+  dailyNewLimit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -308,6 +326,7 @@ export type UserScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   role?: Prisma.StringWithAggregatesFilter<"User"> | string
   disabled?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  dailyNewLimit?: Prisma.IntWithAggregatesFilter<"User"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -318,6 +337,7 @@ export type UserCreateInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightCreateNestedManyWithoutUserInput
@@ -325,6 +345,7 @@ export type UserCreateInput = {
   questionNotes?: Prisma.QuestionNoteCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -334,6 +355,7 @@ export type UserUncheckedCreateInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightUncheckedCreateNestedManyWithoutUserInput
@@ -341,6 +363,7 @@ export type UserUncheckedCreateInput = {
   questionNotes?: Prisma.QuestionNoteUncheckedCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkUncheckedCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordUncheckedCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -349,6 +372,7 @@ export type UserUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUpdateManyWithoutUserNestedInput
@@ -356,6 +380,7 @@ export type UserUpdateInput = {
   questionNotes?: Prisma.QuestionNoteUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -365,6 +390,7 @@ export type UserUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUncheckedUpdateManyWithoutUserNestedInput
@@ -372,6 +398,7 @@ export type UserUncheckedUpdateInput = {
   questionNotes?: Prisma.QuestionNoteUncheckedUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUncheckedUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUncheckedUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -381,6 +408,7 @@ export type UserCreateManyInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -391,6 +419,7 @@ export type UserUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -402,6 +431,7 @@ export type UserUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -413,12 +443,14 @@ export type UserCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   role?: Prisma.SortOrder
   disabled?: Prisma.SortOrder
+  dailyNewLimit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  dailyNewLimit?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -428,6 +460,7 @@ export type UserMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   role?: Prisma.SortOrder
   disabled?: Prisma.SortOrder
+  dailyNewLimit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -439,12 +472,14 @@ export type UserMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   role?: Prisma.SortOrder
   disabled?: Prisma.SortOrder
+  dailyNewLimit?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  dailyNewLimit?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -460,16 +495,30 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type DateTimeFieldUpdateOperationsInput = {
+  set?: Date | string
+}
+
+export type UserCreateNestedOneWithoutSelectedCategoriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSelectedCategoriesInput, Prisma.UserUncheckedCreateWithoutSelectedCategoriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSelectedCategoriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSelectedCategoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSelectedCategoriesInput, Prisma.UserUncheckedCreateWithoutSelectedCategoriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSelectedCategoriesInput
+  upsert?: Prisma.UserUpsertWithoutSelectedCategoriesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSelectedCategoriesInput, Prisma.UserUpdateWithoutSelectedCategoriesInput>, Prisma.UserUncheckedUpdateWithoutSelectedCategoriesInput>
 }
 
 export type UserCreateNestedOneWithoutHighlightsInput = {
@@ -542,18 +591,102 @@ export type UserUpdateOneRequiredWithoutDailyRecordsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDailyRecordsInput, Prisma.UserUpdateWithoutDailyRecordsInput>, Prisma.UserUncheckedUpdateWithoutDailyRecordsInput>
 }
 
+export type UserCreateWithoutSelectedCategoriesInput = {
+  email: string
+  passwordHash: string
+  name: string
+  role?: string
+  disabled?: boolean
+  dailyNewLimit?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  highlights?: Prisma.ArticleHighlightCreateNestedManyWithoutUserInput
+  progressRecords?: Prisma.UserQuestionProgressCreateNestedManyWithoutUserInput
+  questionNotes?: Prisma.QuestionNoteCreateNestedManyWithoutUserInput
+  bookmarks?: Prisma.BookmarkCreateNestedManyWithoutUserInput
+  dailyRecords?: Prisma.DailyRecordCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSelectedCategoriesInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  name: string
+  role?: string
+  disabled?: boolean
+  dailyNewLimit?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  highlights?: Prisma.ArticleHighlightUncheckedCreateNestedManyWithoutUserInput
+  progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutUserInput
+  questionNotes?: Prisma.QuestionNoteUncheckedCreateNestedManyWithoutUserInput
+  bookmarks?: Prisma.BookmarkUncheckedCreateNestedManyWithoutUserInput
+  dailyRecords?: Prisma.DailyRecordUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSelectedCategoriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSelectedCategoriesInput, Prisma.UserUncheckedCreateWithoutSelectedCategoriesInput>
+}
+
+export type UserUpsertWithoutSelectedCategoriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSelectedCategoriesInput, Prisma.UserUncheckedUpdateWithoutSelectedCategoriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSelectedCategoriesInput, Prisma.UserUncheckedCreateWithoutSelectedCategoriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSelectedCategoriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSelectedCategoriesInput, Prisma.UserUncheckedUpdateWithoutSelectedCategoriesInput>
+}
+
+export type UserUpdateWithoutSelectedCategoriesInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  highlights?: Prisma.ArticleHighlightUpdateManyWithoutUserNestedInput
+  progressRecords?: Prisma.UserQuestionProgressUpdateManyWithoutUserNestedInput
+  questionNotes?: Prisma.QuestionNoteUpdateManyWithoutUserNestedInput
+  bookmarks?: Prisma.BookmarkUpdateManyWithoutUserNestedInput
+  dailyRecords?: Prisma.DailyRecordUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSelectedCategoriesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  highlights?: Prisma.ArticleHighlightUncheckedUpdateManyWithoutUserNestedInput
+  progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutUserNestedInput
+  questionNotes?: Prisma.QuestionNoteUncheckedUpdateManyWithoutUserNestedInput
+  bookmarks?: Prisma.BookmarkUncheckedUpdateManyWithoutUserNestedInput
+  dailyRecords?: Prisma.DailyRecordUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutHighlightsInput = {
   email: string
   passwordHash: string
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   progressRecords?: Prisma.UserQuestionProgressCreateNestedManyWithoutUserInput
   questionNotes?: Prisma.QuestionNoteCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutHighlightsInput = {
@@ -563,12 +696,14 @@ export type UserUncheckedCreateWithoutHighlightsInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutUserInput
   questionNotes?: Prisma.QuestionNoteUncheckedCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkUncheckedCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordUncheckedCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutHighlightsInput = {
@@ -593,12 +728,14 @@ export type UserUpdateWithoutHighlightsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progressRecords?: Prisma.UserQuestionProgressUpdateManyWithoutUserNestedInput
   questionNotes?: Prisma.QuestionNoteUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHighlightsInput = {
@@ -608,12 +745,14 @@ export type UserUncheckedUpdateWithoutHighlightsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutUserNestedInput
   questionNotes?: Prisma.QuestionNoteUncheckedUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUncheckedUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUncheckedUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProgressRecordsInput = {
@@ -622,12 +761,14 @@ export type UserCreateWithoutProgressRecordsInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightCreateNestedManyWithoutUserInput
   questionNotes?: Prisma.QuestionNoteCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProgressRecordsInput = {
@@ -637,12 +778,14 @@ export type UserUncheckedCreateWithoutProgressRecordsInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightUncheckedCreateNestedManyWithoutUserInput
   questionNotes?: Prisma.QuestionNoteUncheckedCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkUncheckedCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordUncheckedCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProgressRecordsInput = {
@@ -667,12 +810,14 @@ export type UserUpdateWithoutProgressRecordsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUpdateManyWithoutUserNestedInput
   questionNotes?: Prisma.QuestionNoteUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProgressRecordsInput = {
@@ -682,12 +827,14 @@ export type UserUncheckedUpdateWithoutProgressRecordsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUncheckedUpdateManyWithoutUserNestedInput
   questionNotes?: Prisma.QuestionNoteUncheckedUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUncheckedUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUncheckedUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutQuestionNotesInput = {
@@ -696,12 +843,14 @@ export type UserCreateWithoutQuestionNotesInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightCreateNestedManyWithoutUserInput
   progressRecords?: Prisma.UserQuestionProgressCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutQuestionNotesInput = {
@@ -711,12 +860,14 @@ export type UserUncheckedCreateWithoutQuestionNotesInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightUncheckedCreateNestedManyWithoutUserInput
   progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkUncheckedCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordUncheckedCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutQuestionNotesInput = {
@@ -741,12 +892,14 @@ export type UserUpdateWithoutQuestionNotesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUpdateManyWithoutUserNestedInput
   progressRecords?: Prisma.UserQuestionProgressUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQuestionNotesInput = {
@@ -756,12 +909,14 @@ export type UserUncheckedUpdateWithoutQuestionNotesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUncheckedUpdateManyWithoutUserNestedInput
   progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUncheckedUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUncheckedUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBookmarksInput = {
@@ -770,12 +925,14 @@ export type UserCreateWithoutBookmarksInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightCreateNestedManyWithoutUserInput
   progressRecords?: Prisma.UserQuestionProgressCreateNestedManyWithoutUserInput
   questionNotes?: Prisma.QuestionNoteCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBookmarksInput = {
@@ -785,12 +942,14 @@ export type UserUncheckedCreateWithoutBookmarksInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightUncheckedCreateNestedManyWithoutUserInput
   progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutUserInput
   questionNotes?: Prisma.QuestionNoteUncheckedCreateNestedManyWithoutUserInput
   dailyRecords?: Prisma.DailyRecordUncheckedCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBookmarksInput = {
@@ -815,12 +974,14 @@ export type UserUpdateWithoutBookmarksInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUpdateManyWithoutUserNestedInput
   progressRecords?: Prisma.UserQuestionProgressUpdateManyWithoutUserNestedInput
   questionNotes?: Prisma.QuestionNoteUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBookmarksInput = {
@@ -830,12 +991,14 @@ export type UserUncheckedUpdateWithoutBookmarksInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUncheckedUpdateManyWithoutUserNestedInput
   progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutUserNestedInput
   questionNotes?: Prisma.QuestionNoteUncheckedUpdateManyWithoutUserNestedInput
   dailyRecords?: Prisma.DailyRecordUncheckedUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDailyRecordsInput = {
@@ -844,12 +1007,14 @@ export type UserCreateWithoutDailyRecordsInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightCreateNestedManyWithoutUserInput
   progressRecords?: Prisma.UserQuestionProgressCreateNestedManyWithoutUserInput
   questionNotes?: Prisma.QuestionNoteCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDailyRecordsInput = {
@@ -859,12 +1024,14 @@ export type UserUncheckedCreateWithoutDailyRecordsInput = {
   name: string
   role?: string
   disabled?: boolean
+  dailyNewLimit?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   highlights?: Prisma.ArticleHighlightUncheckedCreateNestedManyWithoutUserInput
   progressRecords?: Prisma.UserQuestionProgressUncheckedCreateNestedManyWithoutUserInput
   questionNotes?: Prisma.QuestionNoteUncheckedCreateNestedManyWithoutUserInput
   bookmarks?: Prisma.BookmarkUncheckedCreateNestedManyWithoutUserInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDailyRecordsInput = {
@@ -889,12 +1056,14 @@ export type UserUpdateWithoutDailyRecordsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUpdateManyWithoutUserNestedInput
   progressRecords?: Prisma.UserQuestionProgressUpdateManyWithoutUserNestedInput
   questionNotes?: Prisma.QuestionNoteUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDailyRecordsInput = {
@@ -904,12 +1073,14 @@ export type UserUncheckedUpdateWithoutDailyRecordsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   disabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dailyNewLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   highlights?: Prisma.ArticleHighlightUncheckedUpdateManyWithoutUserNestedInput
   progressRecords?: Prisma.UserQuestionProgressUncheckedUpdateManyWithoutUserNestedInput
   questionNotes?: Prisma.QuestionNoteUncheckedUpdateManyWithoutUserNestedInput
   bookmarks?: Prisma.BookmarkUncheckedUpdateManyWithoutUserNestedInput
+  selectedCategories?: Prisma.UserSelectedCategoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -923,6 +1094,7 @@ export type UserCountOutputType = {
   questionNotes: number
   bookmarks: number
   dailyRecords: number
+  selectedCategories: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -931,6 +1103,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   questionNotes?: boolean | UserCountOutputTypeCountQuestionNotesArgs
   bookmarks?: boolean | UserCountOutputTypeCountBookmarksArgs
   dailyRecords?: boolean | UserCountOutputTypeCountDailyRecordsArgs
+  selectedCategories?: boolean | UserCountOutputTypeCountSelectedCategoriesArgs
 }
 
 /**
@@ -978,6 +1151,13 @@ export type UserCountOutputTypeCountDailyRecordsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.DailyRecordWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSelectedCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserSelectedCategoryWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -986,6 +1166,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   name?: boolean
   role?: boolean
   disabled?: boolean
+  dailyNewLimit?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   highlights?: boolean | Prisma.User$highlightsArgs<ExtArgs>
@@ -993,6 +1174,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   questionNotes?: boolean | Prisma.User$questionNotesArgs<ExtArgs>
   bookmarks?: boolean | Prisma.User$bookmarksArgs<ExtArgs>
   dailyRecords?: boolean | Prisma.User$dailyRecordsArgs<ExtArgs>
+  selectedCategories?: boolean | Prisma.User$selectedCategoriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1003,6 +1185,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   role?: boolean
   disabled?: boolean
+  dailyNewLimit?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1014,6 +1197,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   role?: boolean
   disabled?: boolean
+  dailyNewLimit?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1025,17 +1209,19 @@ export type UserSelectScalar = {
   name?: boolean
   role?: boolean
   disabled?: boolean
+  dailyNewLimit?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "role" | "disabled" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "role" | "disabled" | "dailyNewLimit" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   highlights?: boolean | Prisma.User$highlightsArgs<ExtArgs>
   progressRecords?: boolean | Prisma.User$progressRecordsArgs<ExtArgs>
   questionNotes?: boolean | Prisma.User$questionNotesArgs<ExtArgs>
   bookmarks?: boolean | Prisma.User$bookmarksArgs<ExtArgs>
   dailyRecords?: boolean | Prisma.User$dailyRecordsArgs<ExtArgs>
+  selectedCategories?: boolean | Prisma.User$selectedCategoriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1049,6 +1235,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     questionNotes: Prisma.$QuestionNotePayload<ExtArgs>[]
     bookmarks: Prisma.$BookmarkPayload<ExtArgs>[]
     dailyRecords: Prisma.$DailyRecordPayload<ExtArgs>[]
+    selectedCategories: Prisma.$UserSelectedCategoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1057,6 +1244,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: string
     role: string
     disabled: boolean
+    dailyNewLimit: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1458,6 +1646,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   questionNotes<T extends Prisma.User$questionNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$questionNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bookmarks<T extends Prisma.User$bookmarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bookmarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookmarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dailyRecords<T extends Prisma.User$dailyRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$dailyRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DailyRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  selectedCategories<T extends Prisma.User$selectedCategoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$selectedCategoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserSelectedCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1493,6 +1682,7 @@ export interface UserFieldRefs {
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'String'>
   readonly disabled: Prisma.FieldRef<"User", 'Boolean'>
+  readonly dailyNewLimit: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -2003,6 +2193,30 @@ export type User$dailyRecordsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.DailyRecordScalarFieldEnum | Prisma.DailyRecordScalarFieldEnum[]
+}
+
+/**
+ * User.selectedCategories
+ */
+export type User$selectedCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserSelectedCategory
+   */
+  select?: Prisma.UserSelectedCategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserSelectedCategory
+   */
+  omit?: Prisma.UserSelectedCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserSelectedCategoryInclude<ExtArgs> | null
+  where?: Prisma.UserSelectedCategoryWhereInput
+  orderBy?: Prisma.UserSelectedCategoryOrderByWithRelationInput | Prisma.UserSelectedCategoryOrderByWithRelationInput[]
+  cursor?: Prisma.UserSelectedCategoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserSelectedCategoryScalarFieldEnum | Prisma.UserSelectedCategoryScalarFieldEnum[]
 }
 
 /**

@@ -1,44 +1,43 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { CalendarHeatmap } from "@/components/stats/CalendarHeatmap";
 
 export default async function Dashboard() {
   const session = await auth();
   const userId = Number(session?.user?.id);
 
-  const [totalQuestions, pendingReview, todayRecord, streak] = await Promise.all([
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [totalQuestions, pendingReview, todayRecord, dailyRecords] = await Promise.all([
     prisma.userQuestionProgress.count({ where: { userId } }),
     prisma.userQuestionProgress.count({
-      where: { userId, nextReviewDate: { lte: new Date() }, repetitions: { gt: 0 } },
+      where: { userId, nextReviewDate: { lte: today }, repetitions: { gt: 0 } },
     }),
     prisma.dailyRecord.findFirst({
-      where: {
-        userId,
-        date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
-      },
+      where: { userId, date: { gte: today } },
     }),
-    (async () => {
-      const records = await prisma.dailyRecord.findMany({
-        where: { userId },
-        orderBy: { date: "desc" },
-        take: 365,
-      });
-      let streak = 0;
-      const today = new Date();
-      for (let i = 0; i < records.length; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const recordDate = records[i]?.date;
-        if (recordDate && new Date(recordDate).toDateString() === d.toDateString()) {
-          streak++;
-        } else break;
-      }
-      return streak;
-    })(),
+    prisma.dailyRecord.findMany({
+      where: { userId },
+      orderBy: { date: "desc" },
+      take: 365,
+    }),
   ]);
 
   const todayLearned = todayRecord?.questionsLearned ?? 0;
   const todayReviewed = todayRecord?.questionsReviewed ?? 0;
+
+  // Calculate streak
+  let streak = 0;
+  for (let i = 0; i < dailyRecords.length; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const recordDate = dailyRecords[i]?.date;
+    if (recordDate && new Date(recordDate).toDateString() === d.toDateString()) {
+      streak++;
+    } else break;
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
@@ -62,6 +61,8 @@ export default async function Dashboard() {
           <p className="text-2xl font-bold">{streak} 天</p>
         </div>
       </div>
+
+      <CalendarHeatmap records={dailyRecords} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Link href="/quiz/learn" className="bg-card border rounded-lg p-6 hover:border-primary transition-colors">
