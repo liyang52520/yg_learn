@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
-import DOMPurify from "dompurify";
 
 type Highlight = { id: number; startOffset: number; endOffset: number; text: string; note: string | null };
 
@@ -40,7 +39,6 @@ export function ArticleReader({
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const { modified, toc: tocItems } = useMemo(() => processContent(article.content), [article.content]);
-  const sanitizedContent = useMemo(() => DOMPurify.sanitize(modified), [modified]);
 
   const fontSizeClass = fontSize === "sm" ? "prose-base" : fontSize === "lg" ? "prose-2xl" : "prose-lg";
 
@@ -128,25 +126,73 @@ export function ArticleReader({
   }
 
   function renderContent() {
-    if (highlights.length === 0) return sanitizedContent;
-    const el = contentRef.current;
-    if (!el) return sanitizedContent;
-    const fullText = el.textContent || "";
-    const parts: { text: string; highlighted: boolean; note?: string }[] = [];
-    let lastIndex = 0;
+    if (highlights.length === 0) return modified;
+
+    const temp = document.createElement("div");
+    temp.innerHTML = modified;
+
+    // Build text node index with cumulative offsets
+    const textNodes: { node: Text; start: number }[] = [];
+    let offset = 0;
+    const walker = document.createTreeWalker(temp, NodeFilter.SHOW_TEXT);
+    let node: Text | null;
+    while ((node = walker.nextNode() as Text | null)) {
+      const len = node.textContent?.length || 0;
+      if (len > 0) textNodes.push({ node, start: offset });
+      offset += len;
+    }
+
+    if (textNodes.length === 0) return modified;
 
     const sorted = [...highlights].sort((a, b) => a.startOffset - b.startOffset);
-    for (const h of sorted) {
-      if (h.startOffset > lastIndex) parts.push({ text: fullText.slice(lastIndex, h.startOffset), highlighted: false });
-      parts.push({ text: fullText.slice(h.startOffset, h.endOffset), highlighted: true, note: h.note || undefined });
-      lastIndex = h.endOffset;
-    }
-    if (lastIndex < fullText.length) parts.push({ text: fullText.slice(lastIndex), highlighted: false });
 
-    return parts.map((p, i) => {
-      if (p.highlighted) return `<mark data-highlight="${i}" class="bg-yellow-200 rounded px-0.5 cursor-pointer" title="${p.note || ""}">${p.text}</mark>`;
-      return p.text;
-    }).join("");
+    // Process from last text node to first to avoid stale references
+    for (let ti = textNodes.length - 1; ti >= 0; ti--) {
+      const tn = textNodes[ti];
+      const text = tn.node.textContent || "";
+      const nodeEnd = tn.start + text.length;
+
+      // Find highlights overlapping this text node, in reverse order
+      const overlaps = sorted
+        .filter((h) => h.startOffset < nodeEnd && h.endOffset > tn.start)
+        .sort((a, b) => b.startOffset - a.startOffset);
+
+      if (overlaps.length === 0) continue;
+
+      const parent = tn.node.parentNode;
+      if (!parent) continue;
+
+      // Build fragment by applying overlaps from last to first
+      const parts: (Node)[] = [];
+      let pos = text.length;
+
+      for (const h of overlaps) {
+        const localEnd = Math.min(h.endOffset, nodeEnd) - tn.start;
+        const localStart = Math.max(h.startOffset, tn.start) - tn.start;
+
+        if (localEnd < pos) {
+          parts.unshift(document.createTextNode(text.slice(localEnd, pos)));
+        }
+
+        const mark = document.createElement("mark");
+        mark.className = "bg-yellow-200 rounded px-0.5 cursor-pointer";
+        if (h.note) mark.title = h.note;
+        mark.textContent = text.slice(localStart, localEnd);
+        parts.unshift(mark);
+
+        pos = localStart;
+      }
+
+      if (pos > 0) {
+        parts.unshift(document.createTextNode(text.slice(0, pos)));
+      }
+
+      const frag = document.createDocumentFragment();
+      for (const p of parts) frag.appendChild(p);
+      parent.replaceChild(frag, tn.node);
+    }
+
+    return temp.innerHTML;
   }
 
   useEffect(() => {
@@ -237,7 +283,7 @@ export function ArticleReader({
               ref={contentRef}
               className={`prose ${fontSizeClass} max-w-none`}
               onMouseUp={handleMouseUp}
-              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+              dangerouslySetInnerHTML={{ __html: modified }}
             />
 
             {popup && (
