@@ -25,7 +25,7 @@ export default async function ReviewPage() {
   ]);
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="mx-auto max-w-3xl">
       <h1 className="text-2xl font-bold mb-2">复习模式</h1>
       <p className="text-muted-foreground mb-6">
         已学习 {stats._count} 题，今日待复习 {reviewQuestions.length} 题

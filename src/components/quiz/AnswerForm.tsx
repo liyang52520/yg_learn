@@ -63,7 +63,7 @@ export function AnswerForm({
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="mx-auto max-w-3xl">
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
         <span className="bg-muted px-2 py-0.5 rounded">{question.category.name}</span>
         {mode && <span className="bg-muted px-2 py-0.5 rounded">{mode === "review" ? "复习" : "学习"}</span>}

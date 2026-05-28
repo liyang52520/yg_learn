@@ -12,7 +12,7 @@ export default async function BookmarksPage() {
   });
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="mx-auto max-w-3xl">
       <h1 className="text-2xl font-bold mb-6">收藏的题目</h1>
       <div className="space-y-3">
         {bookmarks.map((b) => (

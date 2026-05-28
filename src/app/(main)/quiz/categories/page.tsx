@@ -8,7 +8,7 @@ export default async function QuizCategoriesPage() {
   });
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="mx-auto max-w-3xl">
       <h1 className="text-2xl font-bold mb-6">按分类刷题</h1>
       <div className="space-y-6">
         {categories.map((c) => (
