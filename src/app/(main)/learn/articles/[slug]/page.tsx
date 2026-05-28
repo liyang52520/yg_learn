@@ -14,5 +14,23 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     orderBy: { createdAt: "desc" },
   });
 
-  return <ArticleReader article={article} highlights={highlights} userId={Number(session?.user?.id)} />;
+  // Find prev/next articles in the same category
+  const siblings = await prisma.article.findMany({
+    where: { categoryId: article.categoryId },
+    select: { id: true, title: true },
+    orderBy: { createdAt: "desc" },
+  });
+  const currentIndex = siblings.findIndex((s) => s.id === article.id);
+  const prevArticle = currentIndex < siblings.length - 1 ? siblings[currentIndex + 1] : null;
+  const nextArticle = currentIndex > 0 ? siblings[currentIndex - 1] : null;
+
+  return (
+    <ArticleReader
+      article={article}
+      highlights={highlights}
+      userId={Number(session?.user?.id)}
+      prevArticle={prevArticle ? { id: prevArticle.id, title: prevArticle.title } : null}
+      nextArticle={nextArticle ? { id: nextArticle.id, title: nextArticle.title } : null}
+    />
+  );
 }
