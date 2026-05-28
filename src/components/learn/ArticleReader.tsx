@@ -145,26 +145,41 @@ export function ArticleReader({
 
     if (textNodes.length === 0) return modified;
 
+    // Sort and merge overlapping highlights to produce non-overlapping ranges
     const sorted = [...highlights].sort((a, b) => a.startOffset - b.startOffset);
+    const merged: { startOffset: number; endOffset: number; note: string | null }[] = [];
+    for (const h of sorted) {
+      const last = merged[merged.length - 1];
+      if (last && h.startOffset <= last.endOffset) {
+        last.endOffset = Math.max(last.endOffset, h.endOffset);
+        if (h.note) {
+          last.note = last.note ? `${last.note} | ${h.note}` : h.note;
+        }
+      } else {
+        merged.push({ startOffset: h.startOffset, endOffset: h.endOffset, note: h.note || null });
+      }
+    }
 
-    // Process from last text node to first to avoid stale references
+    // Process from last text node to first
     for (let ti = textNodes.length - 1; ti >= 0; ti--) {
       const tn = textNodes[ti];
       const text = tn.node.textContent || "";
       const nodeEnd = tn.start + text.length;
 
-      // Find highlights overlapping this text node, in reverse order
-      const overlaps = sorted
-        .filter((h) => h.startOffset < nodeEnd && h.endOffset > tn.start)
-        .sort((a, b) => b.startOffset - a.startOffset);
-
+      // Find merged ranges overlapping this text node, in reverse order
+      const overlaps: typeof merged = [];
+      for (let hi = merged.length - 1; hi >= 0; hi--) {
+        const h = merged[hi];
+        if (h.startOffset < nodeEnd && h.endOffset > tn.start) {
+          overlaps.push(h);
+        }
+      }
       if (overlaps.length === 0) continue;
 
       const parent = tn.node.parentNode;
       if (!parent) continue;
 
-      // Build fragment by applying overlaps from last to first
-      const parts: (Node)[] = [];
+      const parts: Node[] = [];
       let pos = text.length;
 
       for (const h of overlaps) {
