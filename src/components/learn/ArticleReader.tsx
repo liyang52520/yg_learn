@@ -38,6 +38,12 @@ export function ArticleReader({
   const [progress, setProgress] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [showHighlights, setShowHighlights] = useState(true);
+  const [notePopup, setNotePopup] = useState<{
+    x: number; y: number; text: string;
+    notes: { id: number; note: string | null }[];
+  } | null>(null);
+  const [editingNoteInPopup, setEditingNoteInPopup] = useState<number | null>(null);
+  const [editNoteText, setEditNoteText] = useState("");
 
   const { modified, toc: tocItems } = useMemo(() => processContent(article.content), [article.content]);
 
@@ -147,16 +153,14 @@ export function ArticleReader({
 
     // Sort and merge overlapping highlights to produce non-overlapping ranges
     const sorted = [...highlights].sort((a, b) => a.startOffset - b.startOffset);
-    const merged: { startOffset: number; endOffset: number; note: string | null }[] = [];
+    const merged: { startOffset: number; endOffset: number; notes: { id: number; note: string | null }[] }[] = [];
     for (const h of sorted) {
       const last = merged[merged.length - 1];
       if (last && h.startOffset <= last.endOffset) {
         last.endOffset = Math.max(last.endOffset, h.endOffset);
-        if (h.note) {
-          last.note = last.note ? `${last.note} | ${h.note}` : h.note;
-        }
+        last.notes.push({ id: h.id, note: h.note || null });
       } else {
-        merged.push({ startOffset: h.startOffset, endOffset: h.endOffset, note: h.note || null });
+        merged.push({ startOffset: h.startOffset, endOffset: h.endOffset, notes: [{ id: h.id, note: h.note || null }] });
       }
     }
 
@@ -192,7 +196,7 @@ export function ArticleReader({
 
         const mark = document.createElement("mark");
         mark.className = "bg-yellow-200 rounded px-0.5 cursor-pointer";
-        if (h.note) mark.title = h.note;
+        mark.dataset.notes = JSON.stringify(h.notes);
         mark.textContent = text.slice(localStart, localEnd);
         parts.unshift(mark);
 
@@ -248,6 +252,27 @@ export function ArticleReader({
       img.className = (img.className || "") + " cursor-pointer transition-opacity hover:opacity-80 rounded";
       img.onclick = () => setLightboxImage(img.src);
     });
+  }, [highlights, showHighlights]);
+
+  // Mark click -> note popup (delegated from content div)
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName !== "MARK" || !target.dataset.notes) return;
+      const rect = target.getBoundingClientRect();
+      setNotePopup({
+        x: rect.left,
+        y: rect.bottom + window.scrollY + 4,
+        text: target.textContent || "",
+        notes: JSON.parse(target.dataset.notes),
+      });
+      setEditingNoteInPopup(null);
+      setEditNoteText("");
+    };
+    el.addEventListener("click", handleClick);
+    return () => el.removeEventListener("click", handleClick);
   }, [highlights, showHighlights]);
 
   const formattedDate = article.createdAt
@@ -325,6 +350,55 @@ export function ArticleReader({
                 <div className="flex gap-2 mt-2 justify-end">
                   <button onClick={() => setPopup(null)} className="text-xs px-3 py-1 border rounded-md">取消</button>
                   <button onClick={saveHighlight} className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md">保存</button>
+                </div>
+              </div>
+            )}
+
+            {notePopup && (
+              <div
+                className="fixed z-50 bg-card border rounded-lg shadow-lg w-80"
+                style={{ left: Math.min(notePopup.x, window.innerWidth - 340), top: notePopup.y }}
+              >
+                <div className="p-3 border-b">
+                  <p className="text-xs text-muted-foreground line-clamp-2">&ldquo;{notePopup.text}&rdquo;</p>
+                </div>
+                <div className="p-3 space-y-3 max-h-64 overflow-y-auto">
+                  {notePopup.notes.map((n, i) => (
+                    <div key={n.id}>
+                      {i > 0 && <hr className="my-2 border-muted" />}
+                      {editingNoteInPopup === n.id ? (
+                        <div>
+                          <textarea
+                            value={editNoteText}
+                            onChange={(e) => setEditNoteText(e.target.value)}
+                            className="w-full border rounded-md p-2 text-sm min-h-[60px]"
+                          />
+                          <div className="flex gap-2 mt-1 justify-end">
+                            <button onClick={async () => {
+                              await updateNote(n.id, editNoteText);
+                              setEditingNoteInPopup(null);
+                              setNotePopup(null);
+                            }} className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded">保存</button>
+                            <button onClick={() => setEditingNoteInPopup(null)} className="text-xs px-2 py-1 border rounded">取消</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-sm whitespace-pre-wrap">{n.note || <span className="text-muted-foreground italic">无笔记</span>}</p>
+                          <div className="flex gap-2 mt-1">
+                            <button onClick={() => {
+                              setEditingNoteInPopup(n.id);
+                              setEditNoteText(n.note || "");
+                            }} className="text-xs text-primary">编辑</button>
+                            <button onClick={async () => {
+                              await deleteHighlight(n.id);
+                              setNotePopup(null);
+                            }} className="text-xs text-red-500">删除</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
