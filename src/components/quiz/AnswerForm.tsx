@@ -52,6 +52,11 @@ export function AnswerForm({
     setShowNoteInput(false);
   }
 
+  async function deleteNote(id: number) {
+    await fetch(`/api/question-notes/${id}`, { method: "DELETE" });
+    setNotes(notes.filter((n: any) => n.id !== id));
+  }
+
   const sanitizedContent = DOMPurify.sanitize(question.content);
   const sanitizedAnswer = DOMPurify.sanitize(question.answer);
 
@@ -107,7 +112,10 @@ export function AnswerForm({
             {notes.map((n: any) => (
               <div key={n.id} className="bg-muted/30 border rounded-lg p-3">
                 <p className="text-sm">{n.content}</p>
-                <p className="text-xs text-muted-foreground mt-1">{new Date(n.createdAt).toLocaleString()}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-xs text-muted-foreground">{new Date(n.createdAt).toLocaleString()}</p>
+                  <button onClick={() => deleteNote(n.id)} className="text-xs text-red-500 hover:text-red-700">删除</button>
+                </div>
               </div>
             ))}
           </div>
