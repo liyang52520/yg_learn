@@ -37,6 +37,7 @@ export function ArticleReader({
   const [fontSize, setFontSize] = useState<"sm" | "md" | "lg">("md");
   const [progress, setProgress] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [showHighlights, setShowHighlights] = useState(true);
 
   const { modified, toc: tocItems } = useMemo(() => processContent(article.content), [article.content]);
 
@@ -126,7 +127,7 @@ export function ArticleReader({
   }
 
   function renderContent() {
-    if (highlights.length === 0) return modified;
+    if (highlights.length === 0 || !showHighlights) return modified;
 
     const temp = document.createElement("div");
     temp.innerHTML = modified;
@@ -199,7 +200,7 @@ export function ArticleReader({
     if (contentRef.current) {
       contentRef.current.innerHTML = renderContent();
     }
-  }, [highlights]);
+  }, [highlights, showHighlights]);
 
   useEffect(() => {
     if (!contentRef.current) return;
@@ -222,7 +223,7 @@ export function ArticleReader({
       wrapper.appendChild(pre);
       wrapper.appendChild(btn);
     });
-  }, [highlights]);
+  }, [highlights, showHighlights]);
 
   useEffect(() => {
     if (!contentRef.current) return;
@@ -232,7 +233,7 @@ export function ArticleReader({
       img.className = (img.className || "") + " cursor-pointer transition-opacity hover:opacity-80 rounded";
       img.onclick = () => setLightboxImage(img.src);
     });
-  }, [highlights]);
+  }, [highlights, showHighlights]);
 
   const formattedDate = article.createdAt
     ? new Date(article.createdAt).toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })
@@ -254,7 +255,16 @@ export function ArticleReader({
               {formattedDate && <span>{formattedDate}</span>}
               {readingTime > 0 && <span>预计阅读 {readingTime} 分钟</span>}
 
-              <div className="ml-auto flex items-center gap-0.5 border rounded-md overflow-hidden">
+              <button
+                onClick={() => setShowHighlights(!showHighlights)}
+                className={`text-xs px-2 py-1 rounded border transition-colors ${
+                  showHighlights ? "bg-yellow-100 border-yellow-300 text-yellow-800" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {showHighlights ? "标注开" : "标注关"}
+              </button>
+
+              <div className="flex items-center gap-0.5 border rounded-md overflow-hidden">
                 {[
                   { key: "sm" as const, label: "A", cls: "text-xs" },
                   { key: "md" as const, label: "A", cls: "text-sm" },
@@ -283,7 +293,6 @@ export function ArticleReader({
               ref={contentRef}
               className={`prose ${fontSizeClass} max-w-none`}
               onMouseUp={handleMouseUp}
-              dangerouslySetInnerHTML={{ __html: modified }}
             />
 
             {popup && (
