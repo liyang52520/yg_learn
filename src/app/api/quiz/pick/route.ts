@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   const { categoryId, count } = await req.json();
 
   const allQuestions = await prisma.question.findMany({
-    where: { categoryId },
+    where: categoryId ? { categoryId } : {},
     select: { id: true },
   });
 
