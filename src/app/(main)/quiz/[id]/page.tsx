@@ -21,7 +21,11 @@ export default async function QuizQuestionPage({
   });
   if (!question) notFound();
 
-  const questionIds = ids?.split(",").map(Number) || [question.id];
+  const questionIds = ids?.split(",").map(Number) || await prisma.question.findMany({
+    where: {},
+    select: { id: true },
+    orderBy: { createdAt: "desc" },
+  }).then((qs) => qs.map((q) => q.id));
   const currentIndex = questionIds.indexOf(question.id);
   const prevId = currentIndex > 0 ? questionIds[currentIndex - 1] : null;
   const nextId = currentIndex < questionIds.length - 1 ? questionIds[currentIndex + 1] : null;
