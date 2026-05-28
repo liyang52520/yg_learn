@@ -19,21 +19,51 @@ function processContent(html: string) {
   return { modified, toc };
 }
 
-export function ArticleReader({ article, highlights: initialHighlights, userId, prevArticle, nextArticle }: {
+export function ArticleReader({
+  article, highlights: initialHighlights, userId, prevArticle, nextArticle, category, readingTime,
+}: {
   article: any;
   highlights: Highlight[];
   userId: number;
   prevArticle: { id: number; title: string } | null;
   nextArticle: { id: number; title: string } | null;
+  category: string | null;
+  readingTime: number;
 }) {
   const [highlights, setHighlights] = useState<Highlight[]>(initialHighlights);
   const [popup, setPopup] = useState<{ x: number; y: number; startOffset: number; endOffset: number; text: string } | null>(null);
   const [noteText, setNoteText] = useState("");
   const contentRef = useRef<HTMLDivElement>(null);
   const [editingNote, setEditingNote] = useState<number | null>(null);
+  const [fontSize, setFontSize] = useState<"sm" | "md" | "lg">("md");
+  const [progress, setProgress] = useState(0);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const { modified, toc: tocItems } = useMemo(() => processContent(article.content), [article.content]);
   const sanitizedContent = useMemo(() => DOMPurify.sanitize(modified), [modified]);
+
+  const fontSizeClass = fontSize === "sm" ? "prose-base" : fontSize === "lg" ? "prose-2xl" : "prose-lg";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!contentRef.current) return;
+      const rect = contentRef.current.getBoundingClientRect();
+      const viewportBottom = window.innerHeight;
+      const articleStart = rect.top + window.scrollY;
+      const articleEnd = articleStart + rect.height;
+      const scrollPos = window.scrollY + viewportBottom;
+
+      if (scrollPos <= articleStart + 50) { setProgress(0); return; }
+      if (scrollPos >= articleEnd - 50) { setProgress(100); return; }
+
+      const scrolled = scrollPos - articleStart - 50;
+      const total = rect.height - 100;
+      setProgress(Math.min(100, Math.round((scrolled / total) * 100)));
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const scrollToHeading = useCallback((id: string, text: string) => {
     const el = document.getElementById(id);
@@ -125,114 +155,201 @@ export function ArticleReader({ article, highlights: initialHighlights, userId, 
     }
   }, [highlights]);
 
+  useEffect(() => {
+    if (!contentRef.current) return;
+    contentRef.current.querySelectorAll("pre").forEach((pre) => {
+      if (pre.querySelector(".copy-btn")) return;
+      pre.className = (pre.className || "") + " relative rounded-lg text-sm";
+      const btn = document.createElement("button");
+      btn.className =
+        "copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs px-2 py-1 rounded bg-white/10 text-white hover:bg-white/20";
+      btn.textContent = "复制";
+      btn.onclick = async () => {
+        const code = pre.querySelector("code");
+        await navigator.clipboard.writeText(code?.textContent || pre.textContent || "");
+        btn.textContent = "已复制!";
+        setTimeout(() => { btn.textContent = "复制"; }, 2000);
+      };
+      const wrapper = document.createElement("div");
+      wrapper.className = "group relative";
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+      wrapper.appendChild(btn);
+    });
+  }, [highlights]);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    contentRef.current.querySelectorAll("img").forEach((img) => {
+      if (img.dataset.lightboxEnabled) return;
+      img.dataset.lightboxEnabled = "true";
+      img.className = (img.className || "") + " cursor-pointer transition-opacity hover:opacity-80 rounded";
+      img.onclick = () => setLightboxImage(img.src);
+    });
+  }, [highlights]);
+
+  const formattedDate = article.createdAt
+    ? new Date(article.createdAt).toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })
+    : "";
+
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <div className="flex gap-8">
-        <div className="flex-1 min-w-0 max-w-3xl">
-          <h1 className="text-3xl font-bold mb-6">{article.title}</h1>
-          <div
-            ref={contentRef}
-            className="prose prose-lg max-w-none"
-            onMouseUp={handleMouseUp}
-            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-          />
+    <>
+      <div className="sticky top-0 z-40 h-0.5 bg-muted -mx-6">
+        <div className="h-full bg-primary transition-all duration-150 ease-out" style={{ width: `${progress}%` }} />
+      </div>
 
-          {popup && (
-            <div
-              className="fixed z-50 bg-card border rounded-lg shadow-lg p-3 w-80"
-              style={{ left: Math.min(popup.x, window.innerWidth - 320), top: popup.y }}
-            >
-              <p className="text-xs text-muted-foreground mb-2 line-clamp-2">&ldquo;{popup.text}&rdquo;</p>
-              <textarea
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-                placeholder="写点笔记..."
-                className="w-full border rounded-md p-2 text-sm min-h-[60px]"
-              />
-              <div className="flex gap-2 mt-2 justify-end">
-                <button onClick={() => setPopup(null)} className="text-xs px-3 py-1 border rounded-md">取消</button>
-                <button onClick={saveHighlight} className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md">保存</button>
-              </div>
-            </div>
-          )}
+      <div className="max-w-5xl mx-auto p-6">
+        <div className="flex gap-8">
+          <div className="flex-1 min-w-0 max-w-3xl">
+            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2 flex-wrap">
+              {category && (
+                <span className="bg-primary/10 text-primary px-2 py-0.5 rounded text-xs font-medium">{category}</span>
+              )}
+              {formattedDate && <span>{formattedDate}</span>}
+              {readingTime > 0 && <span>预计阅读 {readingTime} 分钟</span>}
 
-          {highlights.length > 0 && (
-            <div className="mt-8 border-t pt-4">
-              <h2 className="font-semibold mb-3">我的笔记 ({highlights.length})</h2>
-              <div className="space-y-3">
-                {highlights.map((h) => (
-                  <div key={h.id} className="bg-muted/30 border rounded-lg p-3">
-                    <p className="text-sm text-muted-foreground mb-1">&ldquo;{h.text}&rdquo;</p>
-                    {editingNote === h.id ? (
-                      <div>
-                        <textarea
-                          defaultValue={h.note || ""}
-                          className="w-full border rounded-md p-2 text-sm min-h-[60px]"
-                          id={`note-${h.id}`}
-                        />
-                        <div className="flex gap-2 mt-1">
-                          <button onClick={() => {
-                            const el = document.getElementById(`note-${h.id}`) as HTMLTextAreaElement;
-                            updateNote(h.id, el.value);
-                          }} className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded">保存</button>
-                          <button onClick={() => setEditingNote(null)} className="text-xs px-2 py-1 border rounded">取消</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-sm">{h.note || <span className="text-muted-foreground italic">无笔记</span>}</p>
-                    )}
-                    <div className="flex gap-2 mt-2">
-                      <button onClick={() => setEditingNote(h.id)} className="text-xs text-primary">编辑</button>
-                      <button onClick={() => deleteHighlight(h.id)} className="text-xs text-red-500">删除</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Prev / Next */}
-          <div className="flex justify-between mt-8 pt-6 border-t">
-            <div>
-              {prevArticle ? (
-                <Link href={`/learn/articles/${prevArticle.id}`} className="text-sm text-muted-foreground hover:text-primary block max-w-[200px]">
-                  <span className="text-xs block">← 上一篇</span>
-                  <span className="line-clamp-1">{prevArticle.title}</span>
-                </Link>
-              ) : <span />}
-            </div>
-            <div className="text-right">
-              {nextArticle ? (
-                <Link href={`/learn/articles/${nextArticle.id}`} className="text-sm text-muted-foreground hover:text-primary block max-w-[200px]">
-                  <span className="text-xs block">下一篇 →</span>
-                  <span className="line-clamp-1">{nextArticle.title}</span>
-                </Link>
-              ) : <span />}
-            </div>
-          </div>
-        </div>
-
-        {tocItems.length > 0 && (
-          <aside className="w-48 shrink-0 hidden lg:block">
-            <div className="sticky top-6 space-y-1">
-              <h3 className="text-sm font-semibold mb-2">目录</h3>
-              <nav className="max-h-[calc(100vh-12rem)] overflow-y-auto space-y-0.5">
-                {tocItems.map((item) => (
+              <div className="ml-auto flex items-center gap-0.5 border rounded-md overflow-hidden">
+                {[
+                  { key: "sm" as const, label: "A", cls: "text-xs" },
+                  { key: "md" as const, label: "A", cls: "text-sm" },
+                  { key: "lg" as const, label: "A", cls: "text-base" },
+                ].map(({ key, label, cls }) => (
                   <button
-                    key={item.id}
-                    onClick={() => scrollToHeading(item.id, item.text)}
-                    className={`block text-left text-sm w-full hover:text-primary transition-colors ${
-                      item.level === 3 ? "pl-4 text-muted-foreground" : "text-foreground"
+                    key={key}
+                    onClick={() => setFontSize(key)}
+                    className={`px-2 py-1 leading-none transition-colors ${cls} ${
+                      fontSize === key ? "bg-muted font-medium" : "hover:bg-muted/50"
                     }`}
                   >
-                    {item.text}
+                    {label}
                   </button>
                 ))}
-              </nav>
+              </div>
             </div>
-          </aside>
-        )}
+
+            <h1 className="text-3xl font-bold mb-6">{article.title}</h1>
+
+            {article.summary && (
+              <p className="text-muted-foreground text-sm mb-6 italic border-l-2 pl-4">{article.summary}</p>
+            )}
+
+            <div
+              ref={contentRef}
+              className={`prose ${fontSizeClass} max-w-none`}
+              onMouseUp={handleMouseUp}
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+            />
+
+            {popup && (
+              <div
+                className="fixed z-50 bg-card border rounded-lg shadow-lg p-3 w-80"
+                style={{ left: Math.min(popup.x, window.innerWidth - 320), top: popup.y }}
+              >
+                <p className="text-xs text-muted-foreground mb-2 line-clamp-2">&ldquo;{popup.text}&rdquo;</p>
+                <textarea
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder="写点笔记..."
+                  className="w-full border rounded-md p-2 text-sm min-h-[60px]"
+                />
+                <div className="flex gap-2 mt-2 justify-end">
+                  <button onClick={() => setPopup(null)} className="text-xs px-3 py-1 border rounded-md">取消</button>
+                  <button onClick={saveHighlight} className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md">保存</button>
+                </div>
+              </div>
+            )}
+
+            {highlights.length > 0 && (
+              <div className="mt-8 border-t pt-4">
+                <h2 className="font-semibold mb-3">我的笔记 ({highlights.length})</h2>
+                <div className="space-y-3">
+                  {highlights.map((h) => (
+                    <div key={h.id} className="bg-muted/30 border rounded-lg p-3">
+                      <p className="text-sm text-muted-foreground mb-1">&ldquo;{h.text}&rdquo;</p>
+                      {editingNote === h.id ? (
+                        <div>
+                          <textarea
+                            defaultValue={h.note || ""}
+                            className="w-full border rounded-md p-2 text-sm min-h-[60px]"
+                            id={`note-${h.id}`}
+                          />
+                          <div className="flex gap-2 mt-1">
+                            <button onClick={() => {
+                              const el = document.getElementById(`note-${h.id}`) as HTMLTextAreaElement;
+                              updateNote(h.id, el.value);
+                            }} className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded">保存</button>
+                            <button onClick={() => setEditingNote(null)} className="text-xs px-2 py-1 border rounded">取消</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm">{h.note || <span className="text-muted-foreground italic">无笔记</span>}</p>
+                      )}
+                      <div className="flex gap-2 mt-2">
+                        <button onClick={() => setEditingNote(h.id)} className="text-xs text-primary">编辑</button>
+                        <button onClick={() => deleteHighlight(h.id)} className="text-xs text-red-500">删除</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-between mt-8 pt-6 border-t">
+              <div>
+                {prevArticle ? (
+                  <Link href={`/learn/articles/${prevArticle.id}`} className="text-sm text-muted-foreground hover:text-primary block max-w-[200px]">
+                    <span className="text-xs block">← 上一篇</span>
+                    <span className="line-clamp-1">{prevArticle.title}</span>
+                  </Link>
+                ) : <span />}
+              </div>
+              <div className="text-right">
+                {nextArticle ? (
+                  <Link href={`/learn/articles/${nextArticle.id}`} className="text-sm text-muted-foreground hover:text-primary block max-w-[200px]">
+                    <span className="text-xs block">下一篇 →</span>
+                    <span className="line-clamp-1">{nextArticle.title}</span>
+                  </Link>
+                ) : <span />}
+              </div>
+            </div>
+          </div>
+
+          {tocItems.length > 0 && (
+            <aside className="w-48 shrink-0 hidden lg:block">
+              <div className="sticky top-6 space-y-1">
+                <h3 className="text-sm font-semibold mb-2">目录</h3>
+                <nav className="max-h-[calc(100vh-12rem)] overflow-y-auto space-y-0.5 scrollbar-thin">
+                  {tocItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollToHeading(item.id, item.text)}
+                      className={`block text-left text-sm w-full hover:text-primary transition-colors ${
+                        item.level === 3 ? "pl-4 text-muted-foreground" : "text-foreground"
+                      }`}
+                    >
+                      {item.text}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </aside>
+          )}
+        </div>
       </div>
-    </div>
+
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 cursor-zoom-out"
+          onClick={() => setLightboxImage(null)}
+        >
+          <img
+            src={lightboxImage}
+            alt=""
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
   );
 }

@@ -6,8 +6,14 @@ import { notFound } from "next/navigation";
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const session = await auth();
-  const article = await prisma.article.findUnique({ where: { id: Number(slug) } });
+  const article = await prisma.article.findUnique({
+    where: { id: Number(slug) },
+    include: { category: true },
+  });
   if (!article) notFound();
+
+  const textContent = (article.content || "").replace(/<[^>]*>/g, "");
+  const readingTime = Math.max(1, Math.ceil(textContent.length / 400));
 
   const highlights = await prisma.articleHighlight.findMany({
     where: { articleId: article.id, userId: Number(session?.user?.id) },
@@ -29,6 +35,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       article={article}
       highlights={highlights}
       userId={Number(session?.user?.id)}
+      category={article.category?.name ?? null}
+      readingTime={readingTime}
       prevArticle={prevArticle ? { id: prevArticle.id, title: prevArticle.title } : null}
       nextArticle={nextArticle ? { id: nextArticle.id, title: nextArticle.title } : null}
     />
