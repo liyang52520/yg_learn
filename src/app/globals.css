@@ -33,3 +33,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* KaTeX inline math alignment */
+span[data-type="inline-math"] .katex {
+  font-size: 1.05em;
+}
+div[data-type="block-math"] {
+  @apply my-4 text-center overflow-x-auto;
+}
+

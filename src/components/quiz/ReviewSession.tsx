@@ -3,6 +3,7 @@
 import DOMPurify from "dompurify";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ProseContent } from "@/components/shared/ProseContent";
 
 interface ReviewQuestion {
   questionId: number;
@@ -93,7 +94,7 @@ export function ReviewSession({ questions }: { questions: ReviewQuestion[] }) {
         <span>已完成: {completed}</span>
       </div>
 
-      <div className="prose prose-lg max-w-none mb-6" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+      <ProseContent html={sanitizedContent} className="prose prose-lg max-w-none mb-6" />
 
       <textarea
         value={userAnswer}
@@ -113,7 +114,7 @@ export function ReviewSession({ questions }: { questions: ReviewQuestion[] }) {
         <div className="mt-6 space-y-4">
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <h3 className="font-semibold text-green-800 mb-2">参考答案</h3>
-            <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizedAnswer }} />
+            <ProseContent html={sanitizedAnswer} className="prose prose-sm max-w-none" />
           </div>
 
           {score === null && (

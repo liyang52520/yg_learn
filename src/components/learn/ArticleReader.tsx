@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
+import katex from "katex";
 
 type Highlight = { id: number; startOffset: number; endOffset: number; text: string; note: string | null };
 
@@ -261,6 +262,27 @@ export function ArticleReader({
       img.onclick = () => setLightboxImage(img.src);
     });
   }, [highlights, showHighlights]);
+
+  // Render math expressions with KaTeX
+  useEffect(() => {
+    if (!contentRef.current) return;
+    contentRef.current.querySelectorAll('span[data-type="inline-math"]').forEach((el) => {
+      const latex = el.getAttribute("data-latex");
+      if (latex) {
+        try {
+          katex.render(latex, el as HTMLElement, { throwOnError: false, displayMode: false });
+        } catch { /* KaTeX error, leave as-is */ }
+      }
+    });
+    contentRef.current.querySelectorAll('div[data-type="block-math"]').forEach((el) => {
+      const latex = el.getAttribute("data-latex");
+      if (latex) {
+        try {
+          katex.render(latex, el as HTMLElement, { throwOnError: false, displayMode: true });
+        } catch { /* KaTeX error, leave as-is */ }
+      }
+    });
+  }, [highlights, showHighlights, fontSize]);
 
   const handleMarkClick = useCallback((e: React.MouseEvent) => {
     const mark = (e.target as HTMLElement).closest("mark");

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { TipTapEditor } from "./TipTapEditor";
+import { ProseContent } from "@/components/shared/ProseContent";
 import { Save } from "lucide-react";
 
 function extractToc(html: string) {
@@ -199,10 +200,10 @@ export function ArticleForm({ article, categories }: { article: any; categories:
           {summary && (
             <p className="text-muted-foreground text-sm mb-6 italic border-l-2 pl-4">{summary}</p>
           )}
-          <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: content }} />
+          <ProseContent html={content} />
         </div>
       ) : (
-        <div className="flex gap-6">
+        <div className="flex gap-6 mx-auto max-w-6xl w-full">
           <div className="flex-1 min-w-0 max-w-4xl space-y-4">
             {/* Title */}
             <input

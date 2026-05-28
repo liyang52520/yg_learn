@@ -1,16 +1,36 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import LinkExtension from "@tiptap/extension-link";
 import ImageExtension from "@tiptap/extension-image";
 import UnderlineExtension from "@tiptap/extension-underline";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import { common, createLowlight } from "lowlight";
+import { InlineMath, BlockMath } from "@tiptap/extension-mathematics";
 import { TextSelection } from "@tiptap/pm/state";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import {
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  Heading1,
+  Heading2,
+  Heading3,
+  Code,
+  Quote,
+  List,
+  ListOrdered,
+  Link,
+  Image,
+  Undo,
+  Redo,
+  Minus,
+  Sigma,
+} from "lucide-react";
+import katex from "katex";
 
-// Image extension with resize support
+// ── Image extension with resize support ──────────────────────────────────────
 const ResizableImage = ImageExtension.extend({
   addAttributes() {
     return {
@@ -30,7 +50,7 @@ const ResizableImage = ImageExtension.extend({
       const img = document.createElement("img");
       img.src = node.attrs.src;
       img.alt = node.attrs.alt || "";
-      if (node.attrs.width) img.style.width = node.attrs.width;
+      if (node.attrs.width) img.style.width = `${node.attrs.width}px`;
 
       const handle = document.createElement("div");
       handle.className =
@@ -48,10 +68,8 @@ const ResizableImage = ImageExtension.extend({
       };
 
       editor.on("selectionUpdate", update);
-      // Defer initial check so getPos is available
       requestAnimationFrame(update);
 
-      // Click on image selects it
       container.addEventListener("click", () => {
         const pos = getPos();
         if (typeof pos === "number") {
@@ -74,11 +92,15 @@ const ResizableImage = ImageExtension.extend({
         const onMouseUp = () => {
           document.removeEventListener("mousemove", onMouseMove);
           document.removeEventListener("mouseup", onMouseUp);
-          editor
-            .chain()
-            .focus()
-            .updateAttributes("image", { width: img.style.width })
-            .run();
+          const pos = getPos();
+          if (typeof pos === "number") {
+            editor
+              .chain()
+              .focus()
+              .setNodeSelection(pos)
+              .updateAttributes("image", { width: parseInt(img.style.width, 10) })
+              .run();
+          }
         };
         document.addEventListener("mousemove", onMouseMove);
         document.addEventListener("mouseup", onMouseUp);
@@ -87,29 +109,23 @@ const ResizableImage = ImageExtension.extend({
 
       container.appendChild(img);
       container.appendChild(handle);
-      return { dom: container, destroy: () => editor.off("selectionUpdate", update) };
+      return {
+        dom: container,
+        update: (updatedNode) => {
+          if (updatedNode.type.name !== "image") return false;
+          if (updatedNode.attrs.width !== node.attrs.width) {
+            img.style.width = updatedNode.attrs.width ? `${updatedNode.attrs.width}px` : "";
+            node = updatedNode;
+          }
+          return true;
+        },
+        destroy: () => editor.off("selectionUpdate", update),
+      };
     };
   },
 });
-import {
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  Heading1,
-  Heading2,
-  Heading3,
-  Code,
-  Quote,
-  List,
-  ListOrdered,
-  Link,
-  Image,
-  Undo,
-  Redo,
-  Minus,
-} from "lucide-react";
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
 async function uploadImage(file: File): Promise<string | null> {
   const formData = new FormData();
   formData.append("file", file);
@@ -151,12 +167,28 @@ function Divider() {
   return <div className="w-px h-5 bg-border mx-0.5" />;
 }
 
+const COMMON_FORMULAS = [
+  { label: "二次方程", latex: "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}" },
+  { label: "勾股定理", latex: "a^2 + b^2 = c^2" },
+  { label: "欧拉公式", latex: "e^{i\\pi} + 1 = 0" },
+  { label: "导数", latex: "\\frac{d}{dx}x^n = nx^{n-1}" },
+  { label: "积分", latex: "\\int_a^b f(x)\\,dx" },
+  { label: "求和", latex: "\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}" },
+  { label: "正态分布", latex: "X \\sim N(\\mu, \\sigma^2)" },
+  { label: "极限", latex: "\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1" },
+];
+
 export function TipTapEditor({ content, onChange }: { content: string; onChange: (html: string) => void }) {
   const [mounted, setMounted] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
-  const [showLinkInput, setShowLinkInput] = useState(false);
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const lowlight = useMemo(() => createLowlight(common), []);
+  const editorRef = useRef<Editor | null>(null);
+  const [mathDialogOpen, setMathDialogOpen] = useState(false);
+  const [mathLatex, setMathLatex] = useState("");
+  const [mathMode, setMathMode] = useState<"inline" | "block">("inline");
+  const [mathPreview, setMathPreview] = useState("");
+  const editingMathPosRef = useRef<number | null>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -164,65 +196,108 @@ export function TipTapEditor({ content, onChange }: { content: string; onChange:
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
-        codeBlock: false,
       }),
-      CodeBlockLowlight.configure({ lowlight }),
       LinkExtension.configure({
         openOnClick: false,
-        HTMLAttributes: { class: "text-primary underline" },
       }),
       ResizableImage,
       UnderlineExtension,
+      InlineMath.configure({
+        katexOptions: { throwOnError: false },
+        onClick: (node, pos) => {
+          const ed = editorRef.current;
+          if (!ed?.isEditable) return;
+          const tr = ed.state.tr
+            .replaceWith(pos, pos + 1, ed.state.schema.text(`$${node.attrs.latex}$`));
+          tr.setSelection(TextSelection.create(tr.doc, pos + 1));
+          ed.view.dispatch(tr);
+        },
+      }),
+      BlockMath.configure({
+        katexOptions: { throwOnError: false },
+        onClick: (node, pos) => {
+          const ed = editorRef.current;
+          if (!ed?.isEditable) return;
+          const text = `$$$` + node.attrs.latex + `$$$`;
+          const tr = ed.state.tr
+            .replaceWith(pos, pos + 1,
+              ed.state.schema.nodes.paragraph.create(null, ed.state.schema.text(text)));
+          tr.setSelection(TextSelection.create(tr.doc, pos + 3));
+          ed.view.dispatch(tr);
+        },
+      }),
     ],
     content,
+    onCreate: ({ editor }) => { editorRef.current = editor; },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
         class: "prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4",
       },
-      handleKeyDown: (view, event) => {
-        if (event.key !== "Tab") return false;
-        const { selection, schema } = view.state;
-        if (selection.$from.parent.type.name !== "codeBlock") return false;
-        event.preventDefault();
-
-        const { from, to } = selection;
-        const doc = view.state.doc;
-        const text = doc.textBetween(from, to);
-
-        if (selection.empty && !event.shiftKey) {
-          // Cursor with no selection — insert a tab
-          view.dispatch(view.state.tr.insertText("\t"));
-          return true;
-        }
-
-        // Selection or Shift+Tab — modify each line
-        const lines = text.split("\n");
-
-        if (event.shiftKey) {
-          // Unindent: remove one leading tab from each line
-          const newText = lines.map((l) => (l.startsWith("\t") ? l.slice(1) : l)).join("\n");
-          const tr = view.state.tr.replaceWith(from, to, schema.text(newText));
-          tr.setSelection(new TextSelection(tr.doc.resolve(from), tr.doc.resolve(from + newText.length)));
-          view.dispatch(tr);
-        } else {
-          // Indent: add one tab to each line
-          const newText = lines.map((l) => "\t" + l).join("\n");
-          const tr = view.state.tr.replaceWith(from, to, schema.text(newText));
-          tr.setSelection(new TextSelection(tr.doc.resolve(from), tr.doc.resolve(from + newText.length)));
-          view.dispatch(tr);
-        }
-        return true;
-      },
     },
     immediatelyRender: false,
   });
 
-  useEffect(() => {
-    if (editor && content && !mounted) {
-      editor.commands.setContent(content);
+  const closeMathDialog = useCallback(() => {
+    setMathDialogOpen(false);
+    setMathLatex("");
+    setMathPreview("");
+    editingMathPosRef.current = null;
+  }, []);
+
+  const applyMath = useCallback(() => {
+    if (!editor || !mathLatex.trim()) return;
+    if (mathMode === "inline") {
+      editor.chain().focus().insertInlineMath({ latex: mathLatex }).run();
+    } else {
+      editor.chain().focus().insertBlockMath({ latex: mathLatex }).run();
     }
-  }, [editor, content, mounted]);
+    closeMathDialog();
+  }, [editor, mathLatex, mathMode, closeMathDialog]);
+
+  const handleMathButtonClick = useCallback(() => {
+    setMathLatex("");
+    setMathMode("inline");
+    setMathPreview("");
+    editingMathPosRef.current = null;
+    setMathDialogOpen(true);
+  }, []);
+
+  // Live KaTeX preview
+  useEffect(() => {
+    if (!mathDialogOpen) return;
+    try {
+      const html = katex.renderToString(mathLatex || "\\ ", {
+        throwOnError: false,
+        displayMode: mathMode === "block",
+      });
+      setMathPreview(html);
+    } catch {
+      setMathPreview("");
+    }
+  }, [mathLatex, mathMode, mathDialogOpen]);
+
+  const handleLink = useCallback(() => {
+    if (!editor) return;
+    setLinkUrl(editor.getAttributes("link").href || "");
+    setLinkDialogOpen(true);
+  }, [editor]);
+
+  const applyLink = useCallback(() => {
+    if (!editor) return;
+    if (linkUrl) {
+      editor.chain().focus().extendMarkRange("link").setLink({ href: linkUrl }).run();
+    } else {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+    }
+    setLinkDialogOpen(false);
+  }, [editor, linkUrl]);
+
+  const removeLink = useCallback(() => {
+    if (!editor) return;
+    editor.chain().focus().extendMarkRange("link").unsetLink().run();
+    setLinkDialogOpen(false);
+  }, [editor]);
 
   const handleImageUpload = useCallback(
     async (file: File) => {
@@ -236,6 +311,17 @@ export function TipTapEditor({ content, onChange }: { content: string; onChange:
     },
     [editor],
   );
+
+  const handleImageButtonClick = useCallback(() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (file) handleImageUpload(file);
+    };
+    input.click();
+  }, [handleImageUpload]);
 
   // Paste image from clipboard
   useEffect(() => {
@@ -277,39 +363,6 @@ export function TipTapEditor({ content, onChange }: { content: string; onChange:
     el.addEventListener("drop", onDrop);
     return () => el.removeEventListener("drop", onDrop);
   }, [editor, handleImageUpload]);
-
-  const handleLink = useCallback(() => {
-    if (!editor) return;
-    setLinkUrl(editor.getAttributes("link").href || "");
-    setShowLinkInput(true);
-  }, [editor]);
-
-  const applyLink = useCallback(() => {
-    if (!editor) return;
-    if (linkUrl) {
-      editor.chain().focus().extendMarkRange("link").setLink({ href: linkUrl }).run();
-    } else {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-    }
-    setShowLinkInput(false);
-  }, [editor, linkUrl]);
-
-  const removeLink = useCallback(() => {
-    if (!editor) return;
-    editor.chain().focus().extendMarkRange("link").unsetLink().run();
-    setShowLinkInput(false);
-  }, [editor]);
-
-  const handleImageButtonClick = useCallback(() => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = () => {
-      const file = input.files?.[0];
-      if (file) handleImageUpload(file);
-    };
-    input.click();
-  }, [handleImageUpload]);
 
   if (!mounted) {
     return <div className="border rounded-md min-h-[400px] p-4 bg-muted animate-pulse" />;
@@ -359,30 +412,45 @@ export function TipTapEditor({ content, onChange }: { content: string; onChange:
         <ToolbarButton onClick={handleLink} icon={Link} title="链接" active={editor.isActive("link")} />
         <ToolbarButton onClick={handleImageButtonClick} icon={Image} title="图片" disabled={uploading} />
         <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} icon={Minus} title="分割线" />
+        <Divider />
+        <ToolbarButton onClick={handleMathButtonClick} icon={Sigma} title="数学公式" />
       </div>
 
-      {showLinkInput && (
-        <div className="flex items-center gap-2 p-2 border-b bg-background">
-          <input
-            type="url"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            placeholder="输入链接地址..."
-            className="flex-1 border rounded px-2 py-1 text-sm"
-            autoFocus
-            onKeyDown={(e) => {
-              if (e.key === "Enter") applyLink();
-              if (e.key === "Escape") setShowLinkInput(false);
-            }}
-          />
-          <button type="button" onClick={applyLink} className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded">
-            确定
-          </button>
-          {editor.getAttributes("link").href && (
-            <button type="button" onClick={removeLink} className="text-xs px-2 py-1 border rounded">
-              移除链接
-            </button>
-          )}
+      {linkDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setLinkDialogOpen(false)}>
+          <div className="bg-background rounded-lg shadow-xl w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 border-b flex items-center justify-between">
+              <h3 className="font-medium">插入链接</h3>
+              <button type="button" onClick={() => setLinkDialogOpen(false)} className="text-muted-foreground hover:text-foreground text-lg leading-none">&times;</button>
+            </div>
+            <div className="p-4">
+              <input
+                type="url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="输入链接地址..."
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") applyLink();
+                  if (e.key === "Escape") setLinkDialogOpen(false);
+                }}
+              />
+            </div>
+            <div className="p-4 border-t flex justify-end gap-2">
+              <button type="button" onClick={() => setLinkDialogOpen(false)} className="px-4 py-1.5 text-sm border rounded-md hover:bg-muted transition-colors">
+                取消
+              </button>
+              {editor.getAttributes("link").href && (
+                <button type="button" onClick={removeLink} className="px-4 py-1.5 text-sm border rounded-md hover:bg-muted transition-colors">
+                  移除链接
+                </button>
+              )}
+              <button type="button" onClick={applyLink} className="px-4 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+                确定
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -390,6 +458,85 @@ export function TipTapEditor({ content, onChange }: { content: string; onChange:
         <div className="flex items-center gap-2 p-2 border-b bg-blue-50 text-blue-600 text-sm">
           <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
           上传图片中...
+        </div>
+      )}
+
+      {mathDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={closeMathDialog}>
+          <div className="bg-background rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 border-b flex items-center justify-between">
+              <h3 className="font-medium">插入数学公式</h3>
+              <button type="button" onClick={closeMathDialog} className="text-muted-foreground hover:text-foreground text-lg leading-none">&times;</button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              {/* Mode toggle */}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMathMode("inline")}
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${mathMode === "inline" ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted"}`}
+                >
+                  行内公式
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMathMode("block")}
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${mathMode === "block" ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted"}`}
+                >
+                  块级公式
+                </button>
+              </div>
+
+              {/* LaTeX input */}
+              <textarea
+                value={mathLatex}
+                onChange={(e) => setMathLatex(e.target.value)}
+                placeholder="输入 LaTeX 公式，如 E = mc^2"
+                className="w-full border rounded-md p-2 text-sm font-mono min-h-[80px] resize-y focus:outline-none focus:ring-2 focus:ring-primary"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) applyMath();
+                  if (e.key === "Escape") closeMathDialog();
+                }}
+              />
+
+              {/* Live preview */}
+              {mathLatex && (
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">预览</div>
+                  <div className="border rounded-md p-4 min-h-[60px] flex items-center justify-center bg-muted/30 overflow-x-auto" dangerouslySetInnerHTML={{ __html: mathPreview }} />
+                </div>
+              )}
+
+              {/* Common formulas */}
+              <div>
+                <div className="text-xs text-muted-foreground mb-2">常用公式</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {COMMON_FORMULAS.map((f) => (
+                    <button
+                      key={f.label}
+                      type="button"
+                      onClick={() => setMathLatex(f.latex)}
+                      className="text-left p-2 border rounded-md text-xs hover:bg-muted transition-colors"
+                    >
+                      <div className="font-medium text-foreground mb-0.5">{f.label}</div>
+                      <code className="text-muted-foreground">${f.latex}$</code>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-t flex justify-end gap-2">
+              <button type="button" onClick={closeMathDialog} className="px-4 py-1.5 text-sm border rounded-md hover:bg-muted transition-colors">
+                取消
+              </button>
+              <button type="button" onClick={applyMath} className="px-4 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+                插入
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
